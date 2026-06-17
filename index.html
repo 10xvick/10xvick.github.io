@@ -99,8 +99,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        min-height: 220px;
-        text-decoration: none;
+        min-height: 240px;
         color: inherit;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
       }
@@ -150,12 +149,23 @@
         border: 1px solid rgba(102, 252, 241, 0.2);
       }
 
+      .project-title-link {
+        text-decoration: none;
+        color: inherit;
+        display: inline-block;
+      }
+
       .project-title {
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 10px;
         color: var(--text-primary);
         line-height: 1.25;
+        transition: color 0.3s ease;
+      }
+
+      .project-title-link:hover .project-title {
+        color: var(--accent-cyan);
       }
 
       .project-desc {
@@ -180,13 +190,14 @@
         font-size: 0.9rem;
         font-weight: 600;
         color: var(--text-primary);
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 6px;
+        text-decoration: none;
         transition: color 0.3s ease;
       }
 
-      .card:hover .visit-link {
+      .visit-link:hover {
         color: var(--accent-cyan);
       }
 
@@ -195,8 +206,23 @@
         fill: currentColor;
       }
 
-      .card:hover .visit-link svg {
+      .visit-link:hover svg {
         transform: translateX(4px);
+      }
+
+      .repo-link {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .repo-link:hover {
+        color: var(--accent-cyan);
       }
 
       /* Loader styles */
@@ -284,22 +310,19 @@
       
       // Known fallback links in case the API limit is hit or network request fails
       const fallbackProjects = [
-        { title: "SNES Emulator", url: `https://${USERNAME}.github.io/emulator/snes/`, category: "emulator", desc: "A browser-based Super Nintendo Entertainment System (SNES) emulator written in TypeScript." },
-        { title: "World Simulator", url: `https://${USERNAME}.github.io/games/sims/`, category: "games", desc: "A sophisticated life and social simulator featuring needs, career progression, autonomy, and emotions." },
-        { title: "Snake Spinner", url: `https://${USERNAME}.github.io/snake-spinner/`, category: "games", desc: "Classic snake game variation with spin mechanics." },
-        { title: "Bot Tree", url: `https://${USERNAME}.github.io/tools/chat/bottree/`, category: "tools", desc: "Interactive chat bot decision tree visualizer." },
-        { title: "Raster Script", url: `https://${USERNAME}.github.io/tools/image/rasterscript/`, category: "tools", desc: "Interactive image rasterization and parsing script playground." },
-        { title: "Nexroom", url: `https://${USERNAME}.github.io/tools/social/nexroom/`, category: "tools", desc: "Social room interaction layout builder." }
+        { title: "SNES Emulator", url: `https://${USERNAME}.github.io/emulator/snes/`, repoUrl: `https://github.com/${USERNAME}/snes-emulator`, category: "emulator", desc: "A browser-based Super Nintendo Entertainment System (SNES) emulator written in TypeScript." },
+        { title: "World Simulator", url: `https://${USERNAME}.github.io/games/sims/`, repoUrl: `https://github.com/${USERNAME}/sims`, category: "games", desc: "A sophisticated life and social simulator featuring needs, career progression, autonomy, and emotions." },
+        { title: "Snake Spinner", url: `https://${USERNAME}.github.io/snake-spinner/`, repoUrl: `https://github.com/${USERNAME}/snake-spinner`, category: "games", desc: "Classic snake game variation with spin mechanics." },
+        { title: "Bot Tree", url: `https://${USERNAME}.github.io/tools/chat/bottree/`, repoUrl: `https://github.com/${USERNAME}/bottree`, category: "tools", desc: "Interactive chat bot decision tree visualizer." },
+        { title: "Raster Script", url: `https://${USERNAME}.github.io/tools/image/rasterscript/`, repoUrl: `https://github.com/${USERNAME}/rasterscript`, category: "tools", desc: "Interactive image rasterization and parsing script playground." },
+        { title: "Nexroom", url: `https://${USERNAME}.github.io/tools/social/nexroom/`, repoUrl: `https://github.com/${USERNAME}/nexroom`, category: "tools", desc: "Social room interaction layout builder." }
       ];
 
       // Formats project titles from raw folder structures
       function formatTitle(name) {
-        // e.g. "emulator/snes/" -> "SNES Emulator"
-        // e.g. "snake-spinner" -> "Snake Spinner"
         let parts = name.split('/').filter(Boolean);
         let lastPart = parts[parts.length - 1];
         
-        // Custom overrides for prettier display
         const overrides = {
           'snes': 'SNES Emulator',
           'sims': 'World Simulator',
@@ -326,6 +349,22 @@
         return 'playground';
       }
 
+      // Dynamically matches subfolders to their respective code repositories
+      function determineRepoUrl(path, allRepos) {
+        let parts = path.split('/').filter(Boolean);
+        let lastPart = parts[parts.length - 1];
+
+        if (lastPart === 'snes') return `https://github.com/${USERNAME}/snes-emulator`;
+        if (lastPart === 'sims') return `https://github.com/${USERNAME}/sims`;
+
+        if (allRepos && allRepos.some(r => r.name.toLowerCase() === lastPart.toLowerCase())) {
+          return `https://github.com/${USERNAME}/${lastPart}`;
+        }
+        
+        // Link to the specific subfolder in the landing page repository
+        return `https://github.com/${USERNAME}/${USERNAME}.github.io/tree/main/${path}`;
+      }
+
       // Simple generic desc generator if none is provided
       function generateDesc(path, category) {
         const title = formatTitle(path);
@@ -337,25 +376,34 @@
         grid.innerHTML = "";
         
         projects.forEach(p => {
-          const card = document.createElement("a");
+          const card = document.createElement("div");
           card.className = "card";
-          card.href = p.url;
           card.id = `project-${p.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
           
           card.innerHTML = `
             <div class="card-content">
               <span class="category-tag">${p.category}</span>
-              <h2 class="project-title">${p.title}</h2>
+              <a href="${p.url}" class="project-title-link">
+                <h2 class="project-title">${p.title}</h2>
+              </a>
               <p class="project-desc">${p.desc}</p>
             </div>
             <div class="card-footer">
-              <span class="visit-link">
+              <a href="${p.url}" class="visit-link">
                 Launch Project 
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
-              </span>
+              </a>
+              ${p.repoUrl ? `
+                <a href="${p.repoUrl}" class="repo-link" target="_blank" rel="noopener noreferrer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                  </svg>
+                  Source Code
+                </a>
+              ` : ''}
             </div>
           `;
           grid.appendChild(card);
@@ -372,17 +420,19 @@
         const fallbackGrid = document.getElementById("fallback-links");
         fallbackGrid.innerHTML = "";
         fallbackProjects.forEach(p => {
-          const card = document.createElement("a");
+          const card = document.createElement("div");
           card.className = "card";
-          card.href = p.url;
           card.innerHTML = `
             <div class="card-content">
               <span class="category-tag">${p.category}</span>
-              <h2 class="project-title">${p.title}</h2>
+              <a href="${p.url}" class="project-title-link">
+                <h2 class="project-title">${p.title}</h2>
+              </a>
               <p class="project-desc">${p.desc}</p>
             </div>
             <div class="card-footer">
-              <span class="visit-link">Launch Project</span>
+              <a href="${p.url}" class="visit-link">Launch Project</a>
+              <a href="${p.repoUrl}" class="repo-link" target="_blank" rel="noopener noreferrer">Source Code</a>
             </div>
           `;
           fallbackGrid.appendChild(card);
@@ -423,14 +473,15 @@
                   
                   const title = formatTitle(subpath);
                   const category = determineCategory(subpath);
+                  const repoUrl = determineRepoUrl(subpath, reposData);
                   
-                  // Look up predefined description if available
                   const fallbackMatch = fallbackProjects.find(fp => fp.url.includes(subpath));
                   const desc = fallbackMatch ? fallbackMatch.desc : generateDesc(subpath, category);
 
                   projects.push({
                     title,
                     url: `https://${USERNAME}.github.io/${subpath}`,
+                    repoUrl,
                     category,
                     desc
                   });
@@ -451,6 +502,7 @@
                 projects.push({
                   title,
                   url: `https://${USERNAME}.github.io/${repo.name}/`,
+                  repoUrl: repo.html_url,
                   category,
                   desc
                 });
@@ -458,7 +510,6 @@
             }
           });
 
-          // If no dynamic projects discovered, render fallback
           if (projects.length === 0) {
             renderProjects(fallbackProjects);
           } else {
@@ -471,8 +522,8 @@
         }
       }
 
-      // Initialize scan
       scanDeployments();
     </script>
   </body>
 </html>
+
