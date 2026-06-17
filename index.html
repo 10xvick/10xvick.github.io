@@ -494,7 +494,14 @@
           reposData.forEach(repo => {
             if (repo.has_pages && repo.name !== `${USERNAME}.github.io`) {
               const cleanedName = repo.name.replace(/\/$/, "");
-              if (!pathsSeen.has(cleanedName)) {
+              
+              // Filter out repositories already hosted as a subfolder of 10xvick.github.io
+              // e.g. 'games/sims' contains/ends with 'sims', so we ignore the root repo pages URL
+              const alreadySeenAsSubfolder = Array.from(pathsSeen).some(path => 
+                path === cleanedName || path.endsWith('/' + cleanedName)
+              );
+
+              if (!alreadySeenAsSubfolder && !pathsSeen.has(cleanedName)) {
                 const title = formatTitle(repo.name);
                 const category = determineCategory(repo.name);
                 const desc = repo.description || generateDesc(repo.name, category);
@@ -509,6 +516,7 @@
               }
             }
           });
+
 
           if (projects.length === 0) {
             renderProjects(fallbackProjects);
