@@ -1,0 +1,1 @@
+import{n as e,t}from"./timer-DUQIOGvy.js";function n(n,r){return n===void 0&&(n=0),r===void 0&&(r=e),n<0&&(n=0),t(n,n,r)}export{n as t};

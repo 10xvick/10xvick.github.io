@@ -1,0 +1,1 @@
+var e=class{constructor(e,t){this.onMove=e,this.onRestart=t}handleInput(e,t){if(t){e.type===`SELECT`&&this.onRestart();return}let n=0,r=0;e.type===`UP`&&(r=1),e.type===`DOWN`&&(r=-1),e.type===`LEFT`&&(n=-1),e.type===`RIGHT`&&(n=1),(n!==0||r!==0)&&this.onMove(n,r)}};export{e as t};
