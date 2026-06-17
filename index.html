@@ -312,7 +312,7 @@
       const fallbackProjects = [
         { title: "SNES Emulator", url: `https://${USERNAME}.github.io/emulator/snes/`, repoUrl: `https://github.com/${USERNAME}/snes-emulator`, category: "emulator", desc: "A browser-based Super Nintendo Entertainment System (SNES) emulator written in TypeScript." },
         { title: "World Simulator", url: `https://${USERNAME}.github.io/games/sims/`, repoUrl: `https://github.com/${USERNAME}/sims`, category: "games", desc: "A sophisticated life and social simulator featuring needs, career progression, autonomy, and emotions." },
-        { title: "Snake Spinner", url: `https://${USERNAME}.github.io/snake-spinner/`, repoUrl: `https://github.com/${USERNAME}/snake-spinner`, category: "games", desc: "Classic snake game variation with spin mechanics." },
+        { title: "Arcade Station", url: `https://${USERNAME}.github.io/games/arcade-station/`, repoUrl: `https://github.com/${USERNAME}/arcade-station`, category: "games", desc: "A 3D WebGL arcade cabinet playground featuring 49 built-in classic retro games." },
         { title: "Bot Tree", url: `https://${USERNAME}.github.io/tools/chat/bottree/`, repoUrl: `https://github.com/${USERNAME}/bottree`, category: "tools", desc: "Interactive chat bot decision tree visualizer." },
         { title: "Raster Script", url: `https://${USERNAME}.github.io/tools/image/rasterscript/`, repoUrl: `https://github.com/${USERNAME}/rasterscript`, category: "tools", desc: "Interactive image rasterization and parsing script playground." },
         { title: "Nexroom", url: `https://${USERNAME}.github.io/tools/social/nexroom/`, repoUrl: `https://github.com/${USERNAME}/nexroom`, category: "tools", desc: "Social room interaction layout builder." }
@@ -326,6 +326,7 @@
         const overrides = {
           'snes': 'SNES Emulator',
           'sims': 'World Simulator',
+          'arcade-station': 'Arcade Station',
           'bottree': 'Bot Tree',
           'rasterscript': 'Raster Script',
           'nexroom': 'Nexroom'
@@ -344,7 +345,7 @@
       // Automatically determine the category tag based on directory hierarchy
       function determineCategory(path) {
         if (path.includes('emulator')) return 'emulator';
-        if (path.includes('games') || path.includes('spinner') || path.includes('game')) return 'games';
+        if (path.includes('games') || path.includes('spinner') || path.includes('game') || path.includes('arcade')) return 'games';
         if (path.includes('tools') || path.includes('chat') || path.includes('image')) return 'tools';
         return 'playground';
       }
@@ -356,6 +357,7 @@
 
         if (lastPart === 'snes') return `https://github.com/${USERNAME}/snes-emulator`;
         if (lastPart === 'sims') return `https://github.com/${USERNAME}/sims`;
+        if (lastPart === 'arcade-station') return `https://github.com/${USERNAME}/arcade-station`;
 
         if (allRepos && allRepos.some(r => r.name.toLowerCase() === lastPart.toLowerCase())) {
           return `https://github.com/${USERNAME}/${lastPart}`;
@@ -364,6 +366,7 @@
         // Link to the specific subfolder in the landing page repository
         return `https://github.com/${USERNAME}/${USERNAME}.github.io/tree/main/${path}`;
       }
+
 
       // Simple generic desc generator if none is provided
       function generateDesc(path, category) {
