@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="browsermode" content="application" />
   <meta name="layoutmode" content="fitscreen" />
   <title>Android TV Remote D-Pad Keycode Tester</title>
@@ -33,58 +36,22 @@
       -webkit-user-select: none;
     }
 
+    /* FORCED 100% VISUAL FULLSCREEN BY DEFAULT */
     html, body {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 16px;
+      overflow: hidden;
       background-color: var(--bg);
       color: var(--text-main);
-      min-height: 100vh;
-      padding: 20px;
-      overflow: hidden;
       font-family: var(--font-main);
       background-image: 
         radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.15) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.15) 0%, transparent 45%);
-    }
-
-    /* Start Launcher Overlay */
-    .start-launcher-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: rgba(9, 10, 15, 0.95);
-      backdrop-filter: blur(20px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      text-align: center;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    .start-launcher-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .launcher-btn {
-      background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-cyan) 100%);
-      color: #000000;
-      font-family: var(--font-main);
-      font-weight: 900;
-      font-size: 1.8rem;
-      padding: 24px 48px;
-      border-radius: 24px;
-      border: none;
-      box-shadow: 0 0 45px rgba(0, 255, 136, 0.5);
-      cursor: pointer;
-      margin-top: 24px;
-      animation: pulse-btn 1.5s infinite;
-    }
-
-    @keyframes pulse-btn {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 45px rgba(0, 255, 136, 0.5); }
-      50% { transform: scale(1.04); box-shadow: 0 0 65px rgba(0, 255, 136, 0.8); }
     }
 
     /* Flash Overlay Animation */
@@ -104,10 +71,11 @@
 
     .container {
       max-width: 1400px;
+      height: 100%;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
     /* Header */
@@ -115,14 +83,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 24px;
+      padding: 14px 24px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
     }
 
     .brand h1 {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
       background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
       -webkit-background-clip: text;
@@ -148,14 +116,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 24px;
+      padding: 14px 24px;
       border-radius: 16px;
       background: rgba(0, 255, 136, 0.15);
       border: 2px solid var(--accent-green);
     }
 
     .fs-text {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--accent-green);
       display: flex;
@@ -165,12 +133,21 @@
 
     .fs-status {
       font-family: var(--font-mono);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 700;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 20px;
       background: var(--accent-green);
       color: #000000;
+    }
+
+    /* Hidden TV Focus Trap Button */
+    .tv-trap-btn {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
     }
 
     /* Hero Display Box */
@@ -178,12 +155,12 @@
       background: var(--card-bg);
       border: 2px solid var(--accent-green);
       border-radius: 20px;
-      padding: 24px;
+      padding: 20px;
       text-align: center;
     }
 
     .hero-label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 800;
       letter-spacing: 1.5px;
       color: var(--accent-green);
@@ -191,16 +168,16 @@
 
     .hero-keycode {
       font-family: var(--font-mono);
-      font-size: 6rem;
+      font-size: 5.5rem;
       font-weight: 900;
       line-height: 1;
-      margin: 10px 0;
+      margin: 8px 0;
       color: var(--accent-green);
       text-shadow: 0 0 35px rgba(0, 255, 136, 0.5);
     }
 
     .hero-title {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 800;
       color: #ffffff;
     }
@@ -209,9 +186,9 @@
       display: flex;
       justify-content: center;
       gap: 20px;
-      margin-top: 16px;
+      margin-top: 12px;
       font-family: var(--font-mono);
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
     }
 
@@ -225,7 +202,10 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 24px;
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .log-header {
@@ -237,8 +217,8 @@
     .clear-btn {
       font-family: var(--font-main);
       font-weight: 700;
-      font-size: 0.9rem;
-      padding: 8px 18px;
+      font-size: 0.85rem;
+      padding: 6px 14px;
       border-radius: 10px;
       background: rgba(255, 0, 127, 0.2);
       color: var(--accent-magenta);
@@ -247,11 +227,12 @@
     }
 
     .log-table-wrapper {
-      max-height: 280px;
+      flex: 1;
+      max-height: 240px;
       overflow-y: auto;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      margin-top: 16px;
+      margin-top: 12px;
     }
 
     .log-table {
@@ -259,12 +240,12 @@
       border-collapse: collapse;
       text-align: left;
       font-family: var(--font-mono);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .log-table th {
       background: rgba(0, 0, 0, 0.5);
-      padding: 12px 16px;
+      padding: 10px 14px;
       font-weight: 700;
       color: var(--text-muted);
       border-bottom: 1px solid var(--card-border);
@@ -273,36 +254,30 @@
     }
 
     .log-table td {
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .empty-row td {
       text-align: center;
-      padding: 30px;
+      padding: 24px;
       color: var(--text-muted);
     }
   </style>
 </head>
-<body tabindex="0">
-  <!-- Launcher Overlay for First User Activation -->
-  <div id="start-launcher" class="start-launcher-overlay">
-    <h1 style="font-size: 2.5rem; font-weight: 900; color: #ffffff;">📺 Android TV Fullscreen Key Tester</h1>
-    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 12px; max-width: 600px;">
-      Press any button on your TV remote or click anywhere to launch Fullscreen Mode & enable native remote keys!
-    </p>
-    <button class="launcher-btn" id="launch-btn">PRESS ANY BUTTON TO START</button>
-  </div>
+<body>
+  <!-- Hidden TV Focus Trap to immediately capture TV D-Pad focus -->
+  <button id="tv-auto-trap" class="tv-trap-btn" autofocus tabindex="0"></button>
 
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
-        <h1>Android TV Keycode Tester <span class="version-badge">v2.2.0</span></h1>
+        <h1>Android TV Keycode Tester <span class="version-badge">v2.3.0</span></h1>
       </div>
-      <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-cyan);" id="status-badge">
-        Fullscreen Auto-Lock & Back-Key Blocker
+      <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan);" id="status-badge">
+        Default Fullscreen Viewport Active
       </div>
     </header>
 
@@ -310,9 +285,9 @@
     <div class="fs-banner">
       <div class="fs-text">
         <span>🔒</span>
-        <span>AUTO FULLSCREEN LOCKED & BACK KEY PREVENTED</span>
+        <span>FULLSCREEN VIEWPORT LOCKED BY DEFAULT (BACK KEY PREVENTED)</span>
       </div>
-      <div class="fs-status" id="fs-status-text">FULLSCREEN ACTIVE</div>
+      <div class="fs-status" id="fs-status-text">FULLSCREEN BY DEFAULT</div>
     </div>
 
     <!-- Hero Card -->
@@ -323,14 +298,14 @@
       <div class="hero-details">
         <div>e.key: <span id="val-key">--</span></div>
         <div>e.keyCode: <span id="val-code">--</span></div>
-        <div>Back Key Status: <span id="val-back">PREVENTED & BLOCKED</span></div>
+        <div>Back Key Status: <span id="val-back">BLOCKED & PREVENTED</span></div>
       </div>
     </section>
 
     <!-- Log History -->
     <section class="log-card">
       <div class="log-header">
-        <h2 style="font-size: 1.2rem; font-weight: 700; color: #fff;">Raw Hardware Key Log</h2>
+        <h2 style="font-size: 1.1rem; font-weight: 700; color: #fff;">Raw Hardware Key Log</h2>
         <button id="clear-btn" class="clear-btn">Clear Log</button>
       </div>
       
@@ -356,8 +331,6 @@
   </div>
 
   <script>
-    const startLauncher = document.getElementById('start-launcher');
-    const launchBtn = document.getElementById('launch-btn');
     const flashOverlay = document.getElementById('flash-overlay');
     const heroCard = document.getElementById('hero-card');
     const heroKeycode = document.getElementById('hero-keycode');
@@ -366,45 +339,33 @@
     const valCode = document.getElementById('val-code');
     const valBack = document.getElementById('val-back');
     const fsStatusText = document.getElementById('fs-status-text');
+    const tvTrapBtn = document.getElementById('tv-auto-trap');
 
     const logTbody = document.getElementById('log-tbody');
     const clearBtn = document.getElementById('clear-btn');
 
     let flashTimer = null;
-    let isStarted = false;
 
-    // 1. FULLSCREEN ACTIVATOR ON FIRST USER GESTURE
-    function activateFullscreen() {
+    // 1. AUTOMATIC FULLSCREEN ENGINE (Combines CSS Fixed Viewport + Native API)
+    function autoFullscreen() {
+      if (tvTrapBtn) tvTrapBtn.focus();
       if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().then(() => {
-          startLauncher.classList.add('hidden');
-          fsStatusText.textContent = 'FULLSCREEN ACTIVE';
-          isStarted = true;
-        }).catch(err => {
-          // If browser rejected fullscreen without gesture, retry on next interaction
-        });
-      } else {
-        startLauncher.classList.add('hidden');
-        isStarted = true;
+        document.documentElement.requestFullscreen().catch(() => {});
       }
     }
 
-    // Attempt automatic request immediately on page load
-    window.addEventListener('load', activateFullscreen);
-    
-    // Attach gesture triggers to window & launcher button for instant activation on first remote press
-    launchBtn.addEventListener('click', activateFullscreen);
-    ['click', 'pointerdown', 'keydown', 'touchstart'].forEach(evt => {
-      window.addEventListener(evt, activateFullscreen, true);
+    // Trigger on load instantly
+    window.addEventListener('load', autoFullscreen);
+    document.addEventListener('DOMContentLoaded', autoFullscreen);
+
+    // Re-request on any user input or focus change
+    ['click', 'pointerdown', 'keydown', 'touchstart', 'focus'].forEach(evt => {
+      window.addEventListener(evt, autoFullscreen, true);
     });
 
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement) {
-        fsStatusText.textContent = 'RE-LOCKING FULLSCREEN...';
-        setTimeout(activateFullscreen, 50);
-      } else {
-        fsStatusText.textContent = 'FULLSCREEN ACTIVE';
-        startLauncher.classList.add('hidden');
+        setTimeout(autoFullscreen, 30);
       }
     });
 
@@ -429,7 +390,7 @@
 
     // 2. RAW KEYBOARD EVENT LISTENER + PREVENT FULLSCREEN EXIT & PREVENT BACK KEY
     function handleKeyEvent(e) {
-      activateFullscreen();
+      autoFullscreen();
 
       const codeNum = e.keyCode || e.which || 0;
       let keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
@@ -506,7 +467,7 @@
           <td colspan="5">No hardware keypresses recorded yet. Press remote buttons...</td>
         </tr>
       `;
-      activateFullscreen();
+      autoFullscreen();
     });
   </script>
 </body>
