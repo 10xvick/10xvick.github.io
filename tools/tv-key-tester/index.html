@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Android TV Remote D-Pad Keycode Tester</title>
+  <link rel="manifest" href="./manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -18,7 +19,6 @@
       --accent-green: #00ff88;
       --accent-magenta: #ff007f;
       --accent-yellow: #ffcc00;
-      --accent-orange: #ff9900;
       --font-main: 'Outfit', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -27,15 +27,19 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    body {
-      font-family: var(--font-main);
+    html, body {
+      spatial-navigation-contain: page;
       background-color: var(--bg);
       color: var(--text-main);
       min-height: 100vh;
-      padding: 24px;
+      padding: 20px;
       overflow-x: hidden;
+      font-family: var(--font-main);
+      touch-action: none;
       background-image: 
         radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.15) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.15) 0%, transparent 45%);
@@ -52,12 +56,7 @@
     }
 
     .flash-overlay.active-keydown {
-      background: radial-gradient(circle, rgba(0, 255, 136, 0.4) 0%, transparent 70%);
-      opacity: 1;
-    }
-
-    .flash-overlay.active-pointer {
-      background: radial-gradient(circle, rgba(255, 153, 0, 0.3) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.45) 0%, transparent 70%);
       opacity: 1;
     }
 
@@ -135,29 +134,54 @@
       color: var(--accent-green);
     }
 
-    /* Mode Banner Alert */
-    .mode-alert-banner {
+    /* TV Spatial Focusable Grid Section */
+    .tv-grid-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .dpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 60px);
+      gap: 12px;
+      justify-content: center;
+      margin: 16px 0 8px;
+    }
+
+    .dpad-btn {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1.1rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 16px 24px;
-      border-radius: 16px;
-      font-weight: 700;
-      font-size: 1.05rem;
-      transition: all 0.2s ease;
+      justify-content: center;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
     }
 
-    .mode-alert-banner.mode-dpad {
-      background: rgba(0, 255, 136, 0.15);
-      border: 1px solid rgba(0, 255, 136, 0.4);
-      color: var(--accent-green);
+    .dpad-btn:focus, .dpad-btn.active-press {
+      background: var(--accent-green);
+      color: #000000;
+      border-color: #ffffff;
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
+      transform: scale(1.08);
     }
 
-    .mode-alert-banner.mode-mouse {
-      background: rgba(255, 153, 0, 0.18);
-      border: 1px solid rgba(255, 153, 0, 0.5);
-      color: var(--accent-orange);
-    }
+    /* Grid layout placement */
+    .btn-up    { grid-column: 2; grid-row: 1; }
+    .btn-left  { grid-column: 1; grid-row: 2; }
+    .btn-ok    { grid-column: 2; grid-row: 2; background: rgba(0, 240, 255, 0.2); border-color: var(--accent-cyan); }
+    .btn-right { grid-column: 3; grid-row: 2; }
+    .btn-down  { grid-column: 2; grid-row: 3; }
 
     /* Grid Layout */
     .main-grid {
@@ -193,11 +217,6 @@
       border-color: var(--accent-green);
       box-shadow: 0 0 45px rgba(0, 255, 136, 0.45);
       transform: scale(1.01);
-    }
-
-    .hero-card.flash-pointer {
-      border-color: var(--accent-orange);
-      box-shadow: 0 0 40px rgba(255, 153, 0, 0.4);
     }
 
     .hero-header {
@@ -426,11 +445,6 @@
       font-weight: 700;
     }
 
-    .log-table .type-pointer {
-      color: var(--accent-orange);
-      font-weight: 700;
-    }
-
     .log-table .keycode-num {
       font-weight: 800;
       color: var(--accent-yellow);
@@ -443,34 +457,40 @@
     }
   </style>
 </head>
-<body tabindex="0">
+<body>
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
         <span class="pulse-dot"></span>
-        <h1>Android TV D-Pad Keycode Tester <span class="version-badge">v1.4.0</span></h1>
+        <h1>Android TV D-Pad Keycode Tester <span class="version-badge">v1.5.0</span></h1>
       </div>
-      <div class="status-badge" id="status-badge">Awaiting Input Mode Detection...</div>
+      <div class="status-badge" id="status-badge">TV D-Pad Spatial Grid Active</div>
     </header>
 
-    <!-- Remote Mode Guidance Banner -->
-    <div id="mode-alert-banner" class="mode-alert-banner mode-dpad">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span id="mode-icon" style="font-size: 1.4rem;">🎮</span>
-        <span id="mode-text">PRESS D-PAD ARROWS OR OK ON YOUR REMOTE CONTROL...</span>
+    <!-- TV Focusable Spatial Grid: Disables browser virtual mouse cursor mode and forces TV browser into native D-Pad mode -->
+    <section class="tv-grid-card">
+      <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan);">
+        📺 TV Spatial Focus Grid (Disables Browser Virtual Pointer)
       </div>
-      <span id="mode-hint" style="font-size: 0.85rem; font-weight: 600; opacity: 0.9;">
-        Toggle Mouse 🖱️ button on physical remote to switch between Keyboard & Air Mouse
-      </span>
-    </div>
+      <div class="dpad-grid">
+        <button id="btn-up" class="dpad-btn btn-up" tabindex="0" autofocus>▲ UP</button>
+        <button id="btn-left" class="dpad-btn btn-left" tabindex="0">◄ LEFT</button>
+        <button id="btn-ok" class="dpad-btn btn-ok" tabindex="0">OK</button>
+        <button id="btn-right" class="dpad-btn btn-right" tabindex="0">RIGHT ►</button>
+        <button id="btn-down" class="dpad-btn btn-down" tabindex="0">▼ DOWN</button>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">
+        Use physical remote D-Pad arrows to move green focus box across UP, DOWN, LEFT, RIGHT, OK
+      </div>
+    </section>
 
     <main class="main-grid">
       <!-- Flash Hero Box -->
       <section class="card hero-card" id="hero-card">
         <div class="hero-header">
-          <span class="label">LAST DETECTED INPUT</span>
+          <span class="label">LAST DETECTED HARDWARE KEY</span>
           <span class="event-type-badge" id="hero-event-type">EVENT: NONE</span>
         </div>
         
@@ -493,7 +513,7 @@
             <span class="detail-val" id="val-code">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">Input Mode</span>
+            <span class="detail-label">Focused Element</span>
             <span class="detail-val" id="val-which">--</span>
           </div>
         </div>
@@ -501,31 +521,31 @@
 
       <!-- Event Properties Grid -->
       <section class="card info-card">
-        <h2 class="card-title">Live Hardware Input State</h2>
+        <h2 class="card-title">Live Hardware D-Pad State</h2>
         <div class="meta-grid">
           <div class="meta-item">
             <span class="meta-label">Active Mode</span>
-            <span class="meta-badge" id="flag-repeat">UNKNOWN</span>
+            <span class="meta-badge" id="flag-repeat">SPATIAL DPAD</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Repeat Key</span>
             <span class="meta-val" id="flag-location">false</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Target DOM</span>
-            <span class="meta-badge" id="flag-shift">BODY</span>
+            <span class="meta-label">Focused ID</span>
+            <span class="meta-badge" id="flag-shift">btn-up</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">D-Pad Up</span>
-            <span class="meta-badge" id="flag-up">19</span>
+            <span class="meta-badge" id="flag-up">19 (ArrowUp)</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">D-Pad Down</span>
-            <span class="meta-badge" id="flag-down">20</span>
+            <span class="meta-badge" id="flag-down">20 (ArrowDown)</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Select OK</span>
-            <span class="meta-badge" id="flag-ok">23 / 66</span>
+            <span class="meta-badge" id="flag-ok">23 / 66 (Enter)</span>
           </div>
         </div>
         
@@ -545,7 +565,7 @@
       <!-- Log History -->
       <section class="card log-card">
         <div class="log-header">
-          <h2 class="card-title">Recorded Hardware Key Log (<span id="log-count">0</span>)</h2>
+          <h2 class="card-title">Hardware D-Pad Key Log (<span id="log-count">0</span>)</h2>
           <button id="clear-btn" class="clear-btn" tabindex="0">Clear Log</button>
         </div>
         
@@ -557,12 +577,12 @@
                 <th>Mode</th>
                 <th>Event Type</th>
                 <th>KeyCode (Name)</th>
-                <th>Details</th>
+                <th>Focused Element</th>
               </tr>
             </thead>
             <tbody id="log-tbody">
               <tr class="empty-row">
-                <td colspan="5">No keypresses recorded yet. Press D-Pad buttons on remote...</td>
+                <td colspan="5">No D-Pad keypresses recorded yet. Press D-Pad buttons on remote...</td>
               </tr>
             </tbody>
           </table>
@@ -588,15 +608,16 @@
     const flagLocation = document.getElementById('flag-location');
     const flagShift = document.getElementById('flag-shift');
 
-    const modeAlertBanner = document.getElementById('mode-alert-banner');
-    const modeIcon = document.getElementById('mode-icon');
-    const modeText = document.getElementById('mode-text');
-    const modeHint = document.getElementById('mode-hint');
-
     const statusBadge = document.getElementById('status-badge');
     const logTbody = document.getElementById('log-tbody');
     const logCount = document.getElementById('log-count');
     const clearBtn = document.getElementById('clear-btn');
+
+    const btnUp = document.getElementById('btn-up');
+    const btnDown = document.getElementById('btn-down');
+    const btnLeft = document.getElementById('btn-left');
+    const btnRight = document.getElementById('btn-right');
+    const btnOk = document.getElementById('btn-ok');
 
     let keyHistory = [];
     let flashTimer = null;
@@ -620,25 +641,57 @@
       } catch (err) {}
     }
 
-    // 1. D-PAD KEYBOARD EVENT HANDLER (Primary focus)
+    // Explicit D-Pad Focus Navigation Matrix for TV Browsers
+    const dpadMatrix = {
+      'btn-up':    { down: 'btn-ok',    left: 'btn-left',  right: 'btn-right' },
+      'btn-left':  { right: 'btn-ok',   up: 'btn-up',      down: 'btn-down' },
+      'btn-ok':    { left: 'btn-left',  right: 'btn-right', up: 'btn-up', down: 'btn-down' },
+      'btn-right': { left: 'btn-ok',    up: 'btn-up',      down: 'btn-down' },
+      'btn-down':  { up: 'btn-ok',      left: 'btn-left',  right: 'btn-right' }
+    };
+
+    // RAW D-PAD KEYBOARD EVENT HANDLER
     function handleKeyboardEvent(e) {
-      // Prevent default scrolling for D-Pad / Arrow keys / Backspace so TV interface stays steady
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
+      const codeNum = e.keyCode || e.which || 0;
+      let keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
+      const isDown = e.type === 'keydown';
+
+      // Fallbacks for TV Keycodes
+      if (codeNum === 19) keyName = 'ArrowUp';
+      if (codeNum === 20) keyName = 'ArrowDown';
+      if (codeNum === 21) keyName = 'ArrowLeft';
+      if (codeNum === 22) keyName = 'ArrowRight';
+      if (codeNum === 23 || codeNum === 66) keyName = 'Enter';
+      if (codeNum === 4 || codeNum === 461 || codeNum === 10009) keyName = 'Escape';
+
+      // Custom D-Pad focus navigation logic so browser cursor doesn't hijack TV focus
+      if (isDown) {
+        const activeId = document.activeElement ? document.activeElement.id : 'btn-up';
+        const nav = dpadMatrix[activeId];
+
+        if (nav) {
+          let nextId = null;
+          if (keyName === 'ArrowUp') nextId = nav.up;
+          if (keyName === 'ArrowDown') nextId = nav.down;
+          if (keyName === 'ArrowLeft') nextId = nav.left;
+          if (keyName === 'ArrowRight') nextId = nav.right;
+
+          if (nextId) {
+            const nextEl = document.getElementById(nextId);
+            if (nextEl) {
+              e.preventDefault();
+              nextEl.focus();
+            }
+          }
+        }
+      }
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Space', 'Escape'].includes(keyName) || codeNum === 4) {
         e.preventDefault();
       }
 
-      const codeNum = e.keyCode || e.which || 0;
-      const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
-      const isDown = e.type === 'keydown';
-
-      // Update Banner to Confirm KEYBOARD D-PAD MODE
-      modeAlertBanner.className = 'mode-alert-banner mode-dpad';
-      modeIcon.textContent = '✅';
-      modeText.textContent = `RAW KEYBOARD D-PAD MODE ACTIVE (${keyName} / KeyCode ${codeNum})`;
-      modeHint.textContent = 'Remote is sending raw hardware keyboard keycodes!';
-
       statusBadge.textContent = `KEY: ${keyName} (${codeNum})`;
-      flagRepeat.textContent = 'HARDWARE KEYBOARD';
+      flagRepeat.textContent = 'RAW D-PAD KEY';
 
       heroEventType.textContent = `KEYBOARD: ${e.type.toUpperCase()}`;
       heroEventType.style.background = isDown ? 'rgba(0, 255, 136, 0.2)' : 'rgba(0, 240, 255, 0.2)';
@@ -652,11 +705,19 @@
       valSource.textContent = JSON.stringify(e.key || '');
       valKeycode.textContent = codeNum;
       valCode.textContent = JSON.stringify(e.code || '');
-      valWhich.textContent = 'KEYBOARD D-PAD';
+      valWhich.textContent = document.activeElement ? document.activeElement.id : 'BODY';
 
       flagLocation.textContent = Boolean(e.repeat) ? 'TRUE' : 'FALSE';
+      flagShift.textContent = document.activeElement ? document.activeElement.id : 'BODY';
 
       if (isDown) playBeep(300 + (codeNum % 400), 'triangle');
+
+      // Visual press flash on target D-Pad button
+      const currentFocused = document.activeElement;
+      if (currentFocused && currentFocused.classList.contains('dpad-btn')) {
+        currentFocused.classList.add('active-press');
+        setTimeout(() => currentFocused.classList.remove('active-press'), 150);
+      }
 
       // Flash overlay
       flashOverlay.className = 'flash-overlay active-keydown';
@@ -673,57 +734,7 @@
         type: e.type,
         codeNum: codeNum,
         name: keyName,
-        details: `code: ${e.code || '--'}`
-      });
-    }
-
-    // 2. AIR MOUSE POINTER EVENT WARNING HANDLER
-    function handlePointerEvent(e) {
-      if (e.type === 'mousemove' || e.type === 'pointermove') return;
-
-      const btnMap = { '-1': 'Move', 0: 'Left Click (OK)', 1: 'Middle Click', 2: 'Right Click (Back)' };
-      const btnName = btnMap[e.button] !== undefined ? btnMap[e.button] : `Button ${e.button}`;
-
-      // Update Banner to Warn user that AIR MOUSE MODE is active on remote
-      modeAlertBanner.className = 'mode-alert-banner mode-mouse';
-      modeIcon.textContent = '⚠️';
-      modeText.textContent = `AIR MOUSE MODE DETECTED (${btnName})`;
-      modeHint.textContent = 'PRESS THE MOUSE 🖱️ TOGGLE BUTTON ON YOUR REMOTE CONTROL TO SWITCH TO KEYBOARD D-PAD MODE!';
-
-      statusBadge.textContent = `AIR MOUSE (${btnName})`;
-      flagRepeat.textContent = 'AIR MOUSE CURSOR';
-
-      heroEventType.textContent = `AIR MOUSE: ${e.type.toUpperCase()}`;
-      heroEventType.style.background = 'rgba(255, 153, 0, 0.2)';
-      heroEventType.style.color = 'var(--accent-orange)';
-
-      heroKeycode.textContent = e.button;
-      heroKeycode.style.color = 'var(--accent-orange)';
-
-      heroKeyname.textContent = `${btnName} (Mouse Event)`;
-
-      valSource.textContent = '--';
-      valKeycode.textContent = e.button;
-      valCode.textContent = e.type;
-      valWhich.textContent = 'AIR MOUSE CURSOR';
-
-      playBeep(650, 'sine');
-
-      flashOverlay.className = 'flash-overlay active-pointer';
-      heroCard.className = 'card hero-card flash-pointer';
-
-      clearTimeout(flashTimer);
-      flashTimer = setTimeout(() => {
-        flashOverlay.className = 'flash-overlay';
-        heroCard.className = 'card hero-card';
-      }, 180);
-
-      addHistoryLog({
-        mode: 'AIR MOUSE',
-        type: e.type,
-        codeNum: e.button,
-        name: btnName,
-        details: `Coords: X:${Math.round(e.clientX)}, Y:${Math.round(e.clientY)}`
+        details: `Focused: ${document.activeElement ? document.activeElement.id : 'BODY'}`
       });
     }
 
@@ -738,11 +749,9 @@
       }
 
       const tr = document.createElement('tr');
-      const isKey = item.mode === 'KEYBOARD';
-
       tr.innerHTML = `
         <td>${new Date().toLocaleTimeString()}</td>
-        <td class="${isKey ? 'type-key' : 'type-pointer'}">${item.mode}</td>
+        <td class="type-key">${item.mode}</td>
         <td>${item.type}</td>
         <td class="keycode-num">${item.codeNum} (${escapeHtml(item.name)})</td>
         <td>${escapeHtml(item.details)}</td>
@@ -766,9 +775,9 @@
       document.addEventListener(evt, handleKeyboardEvent, true);
     });
 
-    // Attach Pointer Warnings
-    ['click', 'pointerdown', 'mousedown', 'contextmenu'].forEach(evt => {
-      window.addEventListener(evt, handlePointerEvent, true);
+    // Ensure TV Spatial Grid keeps focus on load
+    window.addEventListener('load', () => {
+      if (btnUp) btnUp.focus();
     });
 
     clearBtn.addEventListener('click', () => {
@@ -779,6 +788,7 @@
           <td colspan="5">Log cleared. Press D-Pad buttons on remote...</td>
         </tr>
       `;
+      if (btnUp) btnUp.focus();
     });
   </script>
 </body>
