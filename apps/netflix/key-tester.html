@@ -27,19 +27,15 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
-    html, body {
-      spatial-navigation-contain: page;
+    body {
       background-color: var(--bg);
       color: var(--text-main);
       min-height: 100vh;
       padding: 20px;
       overflow-x: hidden;
       font-family: var(--font-main);
-      touch-action: none;
       background-image: 
         radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.15) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.15) 0%, transparent 45%);
@@ -55,8 +51,8 @@
       transition: opacity 0.05s ease-out;
     }
 
-    .flash-overlay.active-keydown {
-      background: radial-gradient(circle, rgba(0, 255, 136, 0.45) 0%, transparent 70%);
+    .flash-overlay.active {
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.5) 0%, transparent 70%);
       opacity: 1;
     }
 
@@ -77,7 +73,6 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      backdrop-filter: blur(12px);
     }
 
     .brand {
@@ -86,24 +81,9 @@
       gap: 12px;
     }
 
-    .pulse-dot {
-      width: 14px;
-      height: 14px;
-      background: var(--accent-green);
-      border-radius: 50%;
-      box-shadow: 0 0 12px var(--accent-green);
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.6; }
-    }
-
     .brand h1 {
       font-size: 1.6rem;
       font-weight: 800;
-      letter-spacing: -0.5px;
       background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -123,65 +103,37 @@
       -webkit-text-fill-color: var(--accent-cyan);
     }
 
-    .status-badge {
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      font-weight: 600;
-      padding: 8px 16px;
+    /* Huge Diagnostic Counter Card */
+    .counter-card {
+      background: rgba(0, 255, 136, 0.1);
+      border: 2px solid var(--accent-green);
       border-radius: 20px;
-      background: rgba(0, 255, 136, 0.15);
-      border: 1px solid rgba(0, 255, 136, 0.3);
-      color: var(--accent-green);
-    }
-
-    /* TV Spatial Focusable Grid Section */
-    .tv-grid-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 20px;
+      padding: 24px;
       text-align: center;
     }
 
-    .dpad-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 100px);
-      grid-template-rows: repeat(3, 60px);
-      gap: 12px;
-      justify-content: center;
-      margin: 16px 0 8px;
-    }
-
-    .dpad-btn {
-      background: rgba(0, 0, 0, 0.5);
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      color: #ffffff;
-      font-family: var(--font-mono);
+    .counter-title {
+      font-size: 0.9rem;
       font-weight: 800;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.15s ease;
+      letter-spacing: 1.5px;
+      color: var(--accent-green);
     }
 
-    .dpad-btn:focus, .dpad-btn.active-press {
-      background: var(--accent-green);
-      color: #000000;
-      border-color: #ffffff;
-      box-shadow: 0 0 25px rgba(0, 255, 136, 0.8);
-      transform: scale(1.08);
+    .counter-number {
+      font-family: var(--font-mono);
+      font-size: 6.5rem;
+      font-weight: 900;
+      line-height: 1;
+      margin: 12px 0;
+      color: #ffffff;
+      text-shadow: 0 0 35px rgba(0, 255, 136, 0.5);
     }
 
-    /* Grid layout placement */
-    .btn-up    { grid-column: 2; grid-row: 1; }
-    .btn-left  { grid-column: 1; grid-row: 2; }
-    .btn-ok    { grid-column: 2; grid-row: 2; background: rgba(0, 240, 255, 0.2); border-color: var(--accent-cyan); }
-    .btn-right { grid-column: 3; grid-row: 2; }
-    .btn-down  { grid-column: 2; grid-row: 3; }
+    .last-event-name {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
 
     /* Grid Layout */
     .main-grid {
@@ -200,183 +152,6 @@
       border: 1px solid var(--card-border);
       border-radius: 20px;
       padding: 24px;
-      backdrop-filter: blur(12px);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-    }
-
-    /* Hero Box */
-    .hero-card {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 20px;
-      border-color: rgba(0, 240, 255, 0.4);
-    }
-
-    .hero-card.flash-down {
-      border-color: var(--accent-green);
-      box-shadow: 0 0 45px rgba(0, 255, 136, 0.45);
-      transform: scale(1.01);
-    }
-
-    .hero-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .label {
-      font-size: 0.85rem;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-    }
-
-    .event-type-badge {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 8px;
-      background: rgba(0, 255, 136, 0.15);
-      color: var(--accent-green);
-      border: 1px solid rgba(0, 255, 136, 0.3);
-    }
-
-    .hero-body {
-      text-align: center;
-      padding: 16px 0;
-    }
-
-    .keycode-display {
-      font-family: var(--font-mono);
-      font-size: 6rem;
-      font-weight: 900;
-      line-height: 1;
-      color: var(--accent-green);
-      text-shadow: 0 0 35px rgba(0, 255, 136, 0.4);
-    }
-
-    .key-name-display {
-      font-size: 2.3rem;
-      font-weight: 800;
-      margin-top: 12px;
-      color: #ffffff;
-      word-break: break-word;
-    }
-
-    .hero-details {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      padding-top: 16px;
-      border-top: 1px solid var(--card-border);
-    }
-
-    .detail-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.35);
-      padding: 12px 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .detail-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .detail-val {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-top: 4px;
-      color: #ffffff;
-    }
-
-    .detail-val.highlight {
-      color: var(--accent-cyan);
-    }
-
-    /* Info Card & Meta Flags */
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: #ffffff;
-    }
-
-    .meta-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .meta-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(0, 0, 0, 0.35);
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .meta-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .meta-badge, .meta-val {
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-    }
-
-    /* TV Cheatsheet */
-    .tv-cheatsheet {
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .tv-cheatsheet h3 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--accent-cyan);
-      margin-bottom: 10px;
-    }
-
-    .tv-cheatsheet ul {
-      list-style: none;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .tv-cheatsheet li {
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    kbd {
-      font-family: var(--font-mono);
-      background: rgba(255, 255, 255, 0.1);
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.78rem;
-      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     /* Log Card Table */
@@ -396,21 +171,14 @@
       color: var(--accent-magenta);
       border: 1px solid rgba(255, 0, 127, 0.4);
       cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .clear-btn:hover, .clear-btn:focus {
-      background: var(--accent-magenta);
-      color: #ffffff;
-      outline: none;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
     }
 
     .log-table-wrapper {
-      max-height: 280px;
+      max-height: 320px;
       overflow-y: auto;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
+      margin-top: 16px;
     }
 
     .log-table {
@@ -436,20 +204,6 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
-    .log-table tr:hover {
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .log-table .type-key {
-      color: var(--accent-green);
-      font-weight: 700;
-    }
-
-    .log-table .keycode-num {
-      font-weight: 800;
-      color: var(--accent-yellow);
-    }
-
     .empty-row td {
       text-align: center;
       padding: 30px;
@@ -463,287 +217,99 @@
   <div class="container">
     <header class="header">
       <div class="brand">
-        <span class="pulse-dot"></span>
-        <h1>Android TV D-Pad Keycode Tester <span class="version-badge">v1.5.0</span></h1>
+        <h1>Android TV Event Diagnostic <span class="version-badge">v1.6.0</span></h1>
       </div>
-      <div class="status-badge" id="status-badge">TV D-Pad Spatial Grid Active</div>
+      <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-cyan);">
+        Catching ALL Browser Events
+      </div>
     </header>
 
-    <!-- TV Focusable Spatial Grid: Disables browser virtual mouse cursor mode and forces TV browser into native D-Pad mode -->
-    <section class="tv-grid-card">
-      <div style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan);">
-        📺 TV Spatial Focus Grid (Disables Browser Virtual Pointer)
-      </div>
-      <div class="dpad-grid">
-        <button id="btn-up" class="dpad-btn btn-up" tabindex="0" autofocus>▲ UP</button>
-        <button id="btn-left" class="dpad-btn btn-left" tabindex="0">◄ LEFT</button>
-        <button id="btn-ok" class="dpad-btn btn-ok" tabindex="0">OK</button>
-        <button id="btn-right" class="dpad-btn btn-right" tabindex="0">RIGHT ►</button>
-        <button id="btn-down" class="dpad-btn btn-down" tabindex="0">▼ DOWN</button>
-      </div>
-      <div style="font-size: 0.8rem; color: var(--text-muted);">
-        Use physical remote D-Pad arrows to move green focus box across UP, DOWN, LEFT, RIGHT, OK
-      </div>
+    <!-- Huge Diagnostic Counter Box -->
+    <section class="counter-card" id="counter-card">
+      <div class="counter-title">EVENTS CAPTURED COUNT</div>
+      <div class="counter-number" id="event-count">0</div>
+      <div class="last-event-name" id="last-event-desc">Press any remote button...</div>
     </section>
 
-    <main class="main-grid">
-      <!-- Flash Hero Box -->
-      <section class="card hero-card" id="hero-card">
-        <div class="hero-header">
-          <span class="label">LAST DETECTED HARDWARE KEY</span>
-          <span class="event-type-badge" id="hero-event-type">EVENT: NONE</span>
-        </div>
-        
-        <div class="hero-body">
-          <div class="keycode-display" id="hero-keycode">--</div>
-          <div class="key-name-display" id="hero-keyname">Press D-Pad button</div>
-        </div>
-
-        <div class="hero-details">
-          <div class="detail-item">
-            <span class="detail-label">e.key</span>
-            <span class="detail-val" id="val-source">--</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">e.keyCode</span>
-            <span class="detail-val highlight" id="val-keycode">--</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">e.code</span>
-            <span class="detail-val" id="val-code">--</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Focused Element</span>
-            <span class="detail-val" id="val-which">--</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Event Properties Grid -->
-      <section class="card info-card">
-        <h2 class="card-title">Live Hardware D-Pad State</h2>
-        <div class="meta-grid">
-          <div class="meta-item">
-            <span class="meta-label">Active Mode</span>
-            <span class="meta-badge" id="flag-repeat">SPATIAL DPAD</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Repeat Key</span>
-            <span class="meta-val" id="flag-location">false</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Focused ID</span>
-            <span class="meta-badge" id="flag-shift">btn-up</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">D-Pad Up</span>
-            <span class="meta-badge" id="flag-up">19 (ArrowUp)</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">D-Pad Down</span>
-            <span class="meta-badge" id="flag-down">20 (ArrowDown)</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Select OK</span>
-            <span class="meta-badge" id="flag-ok">23 / 66 (Enter)</span>
-          </div>
-        </div>
-        
-        <div class="tv-cheatsheet">
-          <h3>Android TV D-Pad Keycode Map</h3>
-          <ul>
-            <li><kbd>D-Pad Up</kbd> : <span>19 (ArrowUp)</span></li>
-            <li><kbd>D-Pad Down</kbd> : <span>20 (ArrowDown)</span></li>
-            <li><kbd>D-Pad Left</kbd> : <span>21 (ArrowLeft)</span></li>
-            <li><kbd>D-Pad Right</kbd> : <span>22 (ArrowRight)</span></li>
-            <li><kbd>Select / Center</kbd> : <span>23 / 66 (Enter)</span></li>
-            <li><kbd>Back / Escape</kbd> : <span>4 / 27 / 461</span></li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Log History -->
-      <section class="card log-card">
-        <div class="log-header">
-          <h2 class="card-title">Hardware D-Pad Key Log (<span id="log-count">0</span>)</h2>
-          <button id="clear-btn" class="clear-btn" tabindex="0">Clear Log</button>
-        </div>
-        
-        <div class="log-table-wrapper">
-          <table class="log-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Mode</th>
-                <th>Event Type</th>
-                <th>KeyCode (Name)</th>
-                <th>Focused Element</th>
-              </tr>
-            </thead>
-            <tbody id="log-tbody">
-              <tr class="empty-row">
-                <td colspan="5">No D-Pad keypresses recorded yet. Press D-Pad buttons on remote...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+    <!-- Log History -->
+    <section class="card log-card">
+      <div class="log-header">
+        <h2 style="font-size: 1.2rem; font-weight: 700; color: #fff;">Raw Event Stream</h2>
+        <button id="clear-btn" class="clear-btn">Clear Log</button>
+      </div>
+      
+      <div class="log-table-wrapper">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Event Category</th>
+              <th>Event Name</th>
+              <th>KeyCode / Target</th>
+              <th>Raw Details</th>
+            </tr>
+          </thead>
+          <tbody id="log-tbody">
+            <tr class="empty-row">
+              <td colspan="5">No events captured yet. Press any remote button...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </div>
 
   <script>
-    // DOM Element References
     const flashOverlay = document.getElementById('flash-overlay');
-    const heroCard = document.getElementById('hero-card');
-    const heroEventType = document.getElementById('hero-event-type');
-    const heroKeycode = document.getElementById('hero-keycode');
-    const heroKeyname = document.getElementById('hero-keyname');
-
-    const valSource = document.getElementById('val-source');
-    const valKeycode = document.getElementById('val-keycode');
-    const valCode = document.getElementById('val-code');
-    const valWhich = document.getElementById('val-which');
-
-    const flagRepeat = document.getElementById('flag-repeat');
-    const flagLocation = document.getElementById('flag-location');
-    const flagShift = document.getElementById('flag-shift');
-
-    const statusBadge = document.getElementById('status-badge');
+    const counterCard = document.getElementById('counter-card');
+    const eventCountEl = document.getElementById('event-count');
+    const lastEventDescEl = document.getElementById('last-event-desc');
     const logTbody = document.getElementById('log-tbody');
-    const logCount = document.getElementById('log-count');
     const clearBtn = document.getElementById('clear-btn');
 
-    const btnUp = document.getElementById('btn-up');
-    const btnDown = document.getElementById('btn-down');
-    const btnLeft = document.getElementById('btn-left');
-    const btnRight = document.getElementById('btn-right');
-    const btnOk = document.getElementById('btn-ok');
-
-    let keyHistory = [];
+    let totalEvents = 0;
     let flashTimer = null;
 
-    // Audio Context for sound feedback
-    let audioCtx = null;
-    function playBeep(freq = 440, type = 'sine') {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.08);
-      } catch (err) {}
-    }
+    // Listen to EVERY POSSIBLE browser event type
+    const allEventNames = [
+      'keydown', 'keyup', 'keypress',
+      'click', 'pointerdown', 'pointerup', 'mousedown', 'mouseup', 'contextmenu', 'auxclick',
+      'touchstart', 'touchend', 'touchmove', 'touchcancel',
+      'wheel', 'scroll', 'focus', 'blur', 'focusin', 'focusout',
+      'input', 'beforeinput', 'compositionstart', 'compositionend'
+    ];
 
-    // Explicit D-Pad Focus Navigation Matrix for TV Browsers
-    const dpadMatrix = {
-      'btn-up':    { down: 'btn-ok',    left: 'btn-left',  right: 'btn-right' },
-      'btn-left':  { right: 'btn-ok',   up: 'btn-up',      down: 'btn-down' },
-      'btn-ok':    { left: 'btn-left',  right: 'btn-right', up: 'btn-up', down: 'btn-down' },
-      'btn-right': { left: 'btn-ok',    up: 'btn-up',      down: 'btn-down' },
-      'btn-down':  { up: 'btn-ok',      left: 'btn-left',  right: 'btn-right' }
-    };
+    function handleAnyEvent(e) {
+      totalEvents++;
+      eventCountEl.textContent = totalEvents;
 
-    // RAW D-PAD KEYBOARD EVENT HANDLER
-    function handleKeyboardEvent(e) {
-      const codeNum = e.keyCode || e.which || 0;
-      let keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
-      const isDown = e.type === 'keydown';
+      const evtName = e.type || 'unknown';
+      let category = 'KEYBOARD';
+      let codeVal = e.keyCode || e.which || e.button || 0;
+      let desc = `${evtName.toUpperCase()}`;
 
-      // Fallbacks for TV Keycodes
-      if (codeNum === 19) keyName = 'ArrowUp';
-      if (codeNum === 20) keyName = 'ArrowDown';
-      if (codeNum === 21) keyName = 'ArrowLeft';
-      if (codeNum === 22) keyName = 'ArrowRight';
-      if (codeNum === 23 || codeNum === 66) keyName = 'Enter';
-      if (codeNum === 4 || codeNum === 461 || codeNum === 10009) keyName = 'Escape';
-
-      // Custom D-Pad focus navigation logic so browser cursor doesn't hijack TV focus
-      if (isDown) {
-        const activeId = document.activeElement ? document.activeElement.id : 'btn-up';
-        const nav = dpadMatrix[activeId];
-
-        if (nav) {
-          let nextId = null;
-          if (keyName === 'ArrowUp') nextId = nav.up;
-          if (keyName === 'ArrowDown') nextId = nav.down;
-          if (keyName === 'ArrowLeft') nextId = nav.left;
-          if (keyName === 'ArrowRight') nextId = nav.right;
-
-          if (nextId) {
-            const nextEl = document.getElementById(nextId);
-            if (nextEl) {
-              e.preventDefault();
-              nextEl.focus();
-            }
-          }
-        }
+      if (e.key) {
+        desc += ` (key: "${e.key}")`;
+      } else if (e.code) {
+        desc += ` (code: "${e.code}")`;
+      } else if (e.button !== undefined) {
+        category = 'POINTER / MOUSE';
+        desc += ` (button: ${e.button})`;
+      } else if (e.touches) {
+        category = 'TOUCH';
+        desc += ` (${e.touches.length} touches)`;
       }
 
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Space', 'Escape'].includes(keyName) || codeNum === 4) {
-        e.preventDefault();
-      }
+      lastEventDescEl.textContent = `${category}: ${desc}`;
 
-      statusBadge.textContent = `KEY: ${keyName} (${codeNum})`;
-      flagRepeat.textContent = 'RAW D-PAD KEY';
-
-      heroEventType.textContent = `KEYBOARD: ${e.type.toUpperCase()}`;
-      heroEventType.style.background = isDown ? 'rgba(0, 255, 136, 0.2)' : 'rgba(0, 240, 255, 0.2)';
-      heroEventType.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
-
-      heroKeycode.textContent = codeNum;
-      heroKeycode.style.color = 'var(--accent-green)';
-
-      heroKeyname.textContent = keyName;
-
-      valSource.textContent = JSON.stringify(e.key || '');
-      valKeycode.textContent = codeNum;
-      valCode.textContent = JSON.stringify(e.code || '');
-      valWhich.textContent = document.activeElement ? document.activeElement.id : 'BODY';
-
-      flagLocation.textContent = Boolean(e.repeat) ? 'TRUE' : 'FALSE';
-      flagShift.textContent = document.activeElement ? document.activeElement.id : 'BODY';
-
-      if (isDown) playBeep(300 + (codeNum % 400), 'triangle');
-
-      // Visual press flash on target D-Pad button
-      const currentFocused = document.activeElement;
-      if (currentFocused && currentFocused.classList.contains('dpad-btn')) {
-        currentFocused.classList.add('active-press');
-        setTimeout(() => currentFocused.classList.remove('active-press'), 150);
-      }
-
-      // Flash overlay
-      flashOverlay.className = 'flash-overlay active-keydown';
-      heroCard.className = 'card hero-card flash-down';
-
+      // Flash feedback
+      flashOverlay.className = 'flash-overlay active';
       clearTimeout(flashTimer);
       flashTimer = setTimeout(() => {
         flashOverlay.className = 'flash-overlay';
-        heroCard.className = 'card hero-card';
-      }, 180);
+      }, 150);
 
-      addHistoryLog({
-        mode: 'KEYBOARD',
-        type: e.type,
-        codeNum: codeNum,
-        name: keyName,
-        details: `Focused: ${document.activeElement ? document.activeElement.id : 'BODY'}`
-      });
-    }
-
-    function addHistoryLog(item) {
-      keyHistory.unshift(item);
-      if (keyHistory.length > 50) keyHistory.pop();
-
-      logCount.textContent = keyHistory.length;
-
+      // Log entry
       if (logTbody.querySelector('.empty-row')) {
         logTbody.innerHTML = '';
       }
@@ -751,44 +317,38 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${new Date().toLocaleTimeString()}</td>
-        <td class="type-key">${item.mode}</td>
-        <td>${item.type}</td>
-        <td class="keycode-num">${item.codeNum} (${escapeHtml(item.name)})</td>
-        <td>${escapeHtml(item.details)}</td>
+        <td style="color: var(--accent-green); font-weight:700;">${category}</td>
+        <td style="color: var(--accent-cyan);">${evtName}</td>
+        <td style="color: var(--accent-yellow); font-weight:800;">${codeVal}</td>
+        <td>${escapeHtml(desc)}</td>
       `;
 
       logTbody.insertBefore(tr, logTbody.firstChild);
+      if (logTbody.children.length > 60) {
+        logTbody.removeChild(logTbody.lastChild);
+      }
     }
 
     function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    // Attach Keyboard Listeners (Capture + Bubble)
-    ['keydown', 'keyup', 'keypress'].forEach(evt => {
-      window.addEventListener(evt, handleKeyboardEvent, true);
-      window.addEventListener(evt, handleKeyboardEvent, false);
-      document.addEventListener(evt, handleKeyboardEvent, true);
-    });
-
-    // Ensure TV Spatial Grid keeps focus on load
-    window.addEventListener('load', () => {
-      if (btnUp) btnUp.focus();
+    // Attach listeners to window, document, body in capture and bubble phase
+    allEventNames.forEach(name => {
+      window.addEventListener(name, handleAnyEvent, true);
+      window.addEventListener(name, handleAnyEvent, false);
+      document.addEventListener(name, handleAnyEvent, true);
     });
 
     clearBtn.addEventListener('click', () => {
-      keyHistory = [];
-      logCount.textContent = '0';
+      totalEvents = 0;
+      eventCountEl.textContent = '0';
+      lastEventDescEl.textContent = 'Log cleared. Press any remote button...';
       logTbody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="5">Log cleared. Press D-Pad buttons on remote...</td>
+          <td colspan="5">No events captured yet. Press any remote button...</td>
         </tr>
       `;
-      if (btnUp) btnUp.focus();
     });
   </script>
 </body>
