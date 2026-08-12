@@ -134,17 +134,14 @@
       color: var(--accent-green);
     }
 
-    /* Hidden TV Focus Trap Input */
-    .tv-focus-trap {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      width: 20px;
-      height: 20px;
-      opacity: 0.05;
-      z-index: 10000;
-      border: 1px solid var(--accent-cyan);
-      background: transparent;
+    /* Focus Trap Div - Non-IME target for raw Android D-Pad events */
+    .tv-focus-target {
+      outline: none;
+      border: 2px solid transparent;
+    }
+
+    .tv-focus-target:focus {
+      border-color: rgba(0, 240, 255, 0.5);
     }
 
     /* Grid Layout */
@@ -268,6 +265,36 @@
 
     .detail-val.highlight {
       color: var(--accent-cyan);
+    }
+
+    /* Mode Banner */
+    .mode-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 12px 18px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mode-info {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .mode-btn {
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(0, 255, 136, 0.2);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      cursor: pointer;
     }
 
     /* Info Card & Meta Flags */
@@ -437,19 +464,28 @@
   </style>
 </head>
 <body tabindex="0">
-  <!-- Invisible Focus Trap input so Android TV WebViews dispatch JS keyboard events -->
-  <input id="tv-focus-input" type="text" class="tv-focus-trap" autofocus tabindex="0" />
-
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
         <span class="pulse-dot"></span>
-        <h1>Android TV Keycode Tester <span class="version-badge">v1.1.0</span></h1>
+        <h1>Android TV Keycode Tester <span class="version-badge">v1.2.0</span></h1>
       </div>
-      <div class="status-badge" id="status-badge">TV Listening Active</div>
+      <div class="status-badge" id="status-badge">RAW D-PAD MODE (NO IME)</div>
     </header>
+
+    <!-- Non-IME Focus Target Container: Receives focus without triggering Android Gboard/IME keycode 229 -->
+    <div id="tv-focus-target" class="card tv-focus-target" tabindex="0" autofocus inputmode="none" style="padding: 12px 20px; cursor: pointer;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-weight: 700; font-size: 0.95rem; color: var(--accent-green);">
+          🎯 Focus Target Active (Click or Press D-Pad Here)
+        </span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">
+          Prevents On-screen Keyboard IME (KeyCode 229)
+        </span>
+      </div>
+    </div>
 
     <main class="main-grid">
       <!-- Flash Hero Box -->
@@ -515,7 +551,7 @@
         </div>
         
         <div class="tv-cheatsheet">
-          <h3>Android TV Quick Reference</h3>
+          <h3>Android TV Keycodes (Raw Mode)</h3>
           <ul>
             <li><kbd>D-Pad Up</kbd> : <span>19 (ArrowUp)</span></li>
             <li><kbd>D-Pad Down</kbd> : <span>20 (ArrowDown)</span></li>
@@ -559,7 +595,7 @@
 
   <script>
     // DOM Element References
-    const tvFocusInput = document.getElementById('tv-focus-input');
+    const tvFocusTarget = document.getElementById('tv-focus-target');
     const flashOverlay = document.getElementById('flash-overlay');
     const heroCard = document.getElementById('hero-card');
     const heroEventType = document.getElementById('hero-event-type');
@@ -586,19 +622,24 @@
     let keyHistory = [];
     let flashTimer = null;
 
-    // Enforce focus on input trap so Android TV WebView passes all key events
-    function ensureFocus() {
-      if (document.activeElement !== tvFocusInput && document.activeElement !== clearBtn) {
-        try {
-          tvFocusInput.focus({ preventScroll: true });
-        } catch(e){}
+    // Force blur on any active input / text field so Android IME keyboard stays closed
+    function dismissSoftKeyboard() {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+        document.activeElement.blur();
       }
+      try {
+        tvFocusTarget.focus({ preventScroll: true });
+      } catch(e){}
     }
-    
-    // Auto-focus loop for Android TV WebView
-    window.addEventListener('load', ensureFocus);
-    document.addEventListener('click', ensureFocus);
-    setInterval(ensureFocus, 600);
+
+    // Auto-focus loop to keep div focused without triggering soft keyboard
+    window.addEventListener('load', dismissSoftKeyboard);
+    document.addEventListener('click', dismissSoftKeyboard);
+    setInterval(() => {
+      if (document.activeElement !== tvFocusTarget && document.activeElement !== clearBtn) {
+        dismissSoftKeyboard();
+      }
+    }, 500);
 
     // Audio Context for subtle audio feedback on TV button press
     let audioCtx = null;
@@ -619,7 +660,7 @@
       } catch (err) {}
     }
 
-    // Comprehensive Event Handler
+    // Comprehensive Key Event Handler
     function handleKeyEvent(e) {
       // Prevent default scrolling for D-Pad / Arrow keys / Backspace so TV interface stays steady
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
@@ -630,9 +671,6 @@
       const isDown = eventType === 'keydown';
       const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
       const codeNum = e.keyCode || e.which || (e.key ? e.key.charCodeAt(0) : 0);
-
-      // Clear input content so IME / soft keyboard doesn't buffer text
-      if (tvFocusInput) tvFocusInput.value = '';
 
       // Audio feedback
       if (isDown) {
@@ -724,13 +762,13 @@
         .replace(/"/g, '&quot;');
     }
 
-    // Attach listeners to window, document, body, and focus input across both capture and bubble phases
-    ['keydown', 'keyup', 'keypress', 'input', 'beforeinput'].forEach(evtType => {
+    // Attach listeners across window, document, body, and focus target in both capture and bubble phases
+    ['keydown', 'keyup', 'keypress'].forEach(evtType => {
       window.addEventListener(evtType, handleKeyEvent, true);
       window.addEventListener(evtType, handleKeyEvent, false);
       document.addEventListener(evtType, handleKeyEvent, true);
-      if (tvFocusInput) {
-        tvFocusInput.addEventListener(evtType, handleKeyEvent, true);
+      if (tvFocusTarget) {
+        tvFocusTarget.addEventListener(evtType, handleKeyEvent, true);
       }
     });
 
@@ -742,10 +780,10 @@
           <td colspan="5">Log cleared. Press any remote button...</td>
         </tr>
       `;
-      ensureFocus();
+      dismissSoftKeyboard();
     });
 
-    ensureFocus();
+    dismissSoftKeyboard();
   </script>
 </body>
 </html>
