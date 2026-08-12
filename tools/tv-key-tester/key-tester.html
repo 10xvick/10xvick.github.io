@@ -40,7 +40,6 @@
       padding: 20px;
       overflow: hidden;
       font-family: var(--font-main);
-      touch-action: none;
       background-image: 
         radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.15) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.15) 0%, transparent 45%);
@@ -102,6 +101,45 @@
       -webkit-text-fill-color: var(--accent-cyan);
     }
 
+    /* Fullscreen Banner Button */
+    .fs-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 240, 255, 0.2) 100%);
+      border: 2px solid var(--accent-green);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .fs-banner:focus, .fs-banner:hover {
+      background: var(--accent-green);
+      color: #000000;
+      transform: scale(1.01);
+    }
+
+    .fs-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fs-status {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #ffffff;
+    }
+
     /* Hero Display Box */
     .hero-card {
       background: var(--card-bg);
@@ -109,7 +147,6 @@
       border-radius: 20px;
       padding: 24px;
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
     }
 
     .hero-label {
@@ -177,7 +214,7 @@
     }
 
     .log-table-wrapper {
-      max-height: 300px;
+      max-height: 280px;
       overflow-y: auto;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
@@ -214,35 +251,44 @@
     }
   </style>
 </head>
-<body>
+<body tabindex="0">
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
-        <h1>Android TV D-Pad Converter Engine <span class="version-badge">v1.7.0</span></h1>
+        <h1>Android TV Keycode Tester <span class="version-badge">v2.0.0</span></h1>
       </div>
       <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-cyan);" id="status-badge">
-        Capturing Keys & Translating TV Scroll/Click Events
+        Media Player Fullscreen Mode
       </div>
     </header>
 
+    <!-- Fullscreen Mode Activator Banner -->
+    <button id="fs-banner" class="fs-banner" tabindex="0" autofocus>
+      <div class="fs-text">
+        <span>🎬</span>
+        <span>CLICK / PRESS OK TO ENTER FULLSCREEN (ENABLES RAW TV REMOTE KEYS)</span>
+      </div>
+      <div class="fs-status" id="fs-status-text">FULLSCREEN: OFF</div>
+    </button>
+
     <!-- Hero Card -->
     <section class="hero-card" id="hero-card">
-      <div class="hero-label">INFERRED D-PAD KEYACTION</div>
+      <div class="hero-label">DETECTED HARDWARE KEYCODE</div>
       <div class="hero-keycode" id="hero-keycode">--</div>
-      <div class="hero-title" id="hero-title">Press D-Pad arrows or OK on remote</div>
+      <div class="hero-title" id="hero-title">Press D-Pad buttons or OK on remote</div>
       <div class="hero-details">
-        <div>Detected Event: <span id="val-event">NONE</span></div>
-        <div>Inferred Key: <span id="val-key">--</span></div>
-        <div>Source: <span id="val-source">--</span></div>
+        <div>e.key: <span id="val-key">--</span></div>
+        <div>e.keyCode: <span id="val-code">--</span></div>
+        <div>Fullscreen: <span id="val-fs">INACTIVE</span></div>
       </div>
     </section>
 
     <!-- Log History -->
     <section class="log-card">
       <div class="log-header">
-        <h2 style="font-size: 1.2rem; font-weight: 700; color: #fff;">Inferred D-Pad Key Stream</h2>
+        <h2 style="font-size: 1.2rem; font-weight: 700; color: #fff;">Raw Hardware Key Log</h2>
         <button id="clear-btn" class="clear-btn">Clear Log</button>
       </div>
       
@@ -251,15 +297,15 @@
           <thead>
             <tr>
               <th>Time</th>
-              <th>Detected Event</th>
-              <th>Inferred D-Pad Key</th>
+              <th>Event Type</th>
+              <th>Key Name (e.key)</th>
               <th>KeyCode</th>
-              <th>Raw Signal Source</th>
+              <th>Fullscreen Mode</th>
             </tr>
           </thead>
           <tbody id="log-tbody">
             <tr class="empty-row">
-              <td colspan="5">No D-Pad keyactions detected yet. Press remote buttons...</td>
+              <td colspan="5">No hardware keypresses recorded yet. Press remote buttons...</td>
             </tr>
           </tbody>
         </table>
@@ -272,13 +318,16 @@
     const heroCard = document.getElementById('hero-card');
     const heroKeycode = document.getElementById('hero-keycode');
     const heroTitle = document.getElementById('hero-title');
-    const valEvent = document.getElementById('val-event');
     const valKey = document.getElementById('val-key');
-    const valSource = document.getElementById('val-source');
+    const valCode = document.getElementById('val-code');
+    const valFs = document.getElementById('val-fs');
+
+    const fsBanner = document.getElementById('fs-banner');
+    const fsStatusText = document.getElementById('fs-status-text');
+
     const logTbody = document.getElementById('log-tbody');
     const clearBtn = document.getElementById('clear-btn');
 
-    let keyHistory = [];
     let flashTimer = null;
 
     // Audio Context
@@ -300,15 +349,58 @@
       } catch (e) {}
     }
 
-    // Trigger D-Pad Action
-    function triggerDPadAction(keyName, keyCode, rawEventName, sourceDescription) {
-      playBeep(300 + (keyCode % 400));
+    // Toggle Fullscreen Mode
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(() => {
+          fsStatusText.textContent = 'FULLSCREEN: ON (RAW REMOTE KEYS ACTIVE)';
+          fsStatusText.style.background = 'var(--accent-green)';
+          fsStatusText.style.color = '#000000';
+          valFs.textContent = 'ACTIVE';
+        }).catch(err => {
+          console.warn("Fullscreen request error:", err);
+        });
+      } else {
+        document.exitFullscreen().then(() => {
+          fsStatusText.textContent = 'FULLSCREEN: OFF';
+          fsStatusText.style.background = 'rgba(0, 0, 0, 0.4)';
+          fsStatusText.style.color = '#ffffff';
+          valFs.textContent = 'INACTIVE';
+        });
+      }
+    }
 
-      heroKeycode.textContent = keyCode;
+    fsBanner.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = Boolean(document.fullscreenElement);
+      fsStatusText.textContent = isFs ? 'FULLSCREEN: ON (RAW REMOTE KEYS ACTIVE)' : 'FULLSCREEN: OFF';
+      valFs.textContent = isFs ? 'ACTIVE' : 'INACTIVE';
+    });
+
+    // RAW KEYBOARD EVENT LISTENER
+    function handleKeyEvent(e) {
+      const codeNum = e.keyCode || e.which || 0;
+      let keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
+      const isDown = e.type === 'keydown';
+
+      // Smart TV Keycode Fallbacks
+      if (codeNum === 19) keyName = 'ArrowUp';
+      if (codeNum === 20) keyName = 'ArrowDown';
+      if (codeNum === 21) keyName = 'ArrowLeft';
+      if (codeNum === 22) keyName = 'ArrowRight';
+      if (codeNum === 23 || codeNum === 66) keyName = 'Enter';
+      if (codeNum === 4 || codeNum === 461 || codeNum === 10009) keyName = 'Escape';
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(keyName) || codeNum === 4) {
+        e.preventDefault();
+      }
+
+      if (isDown) playBeep(300 + (codeNum % 400));
+
+      heroKeycode.textContent = codeNum;
       heroTitle.textContent = keyName;
-      valEvent.textContent = rawEventName.toUpperCase();
-      valKey.textContent = keyName;
-      valSource.textContent = sourceDescription;
+      valKey.textContent = JSON.stringify(e.key || '');
+      valCode.textContent = codeNum;
 
       // Flash
       flashOverlay.className = 'flash-overlay active';
@@ -325,10 +417,10 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${new Date().toLocaleTimeString()}</td>
-        <td style="color: var(--accent-cyan); font-weight:700;">${rawEventName}</td>
-        <td style="color: var(--accent-green); font-weight:800;">${keyName}</td>
-        <td style="color: var(--accent-yellow); font-weight:800;">${keyCode}</td>
-        <td>${escapeHtml(sourceDescription)}</td>
+        <td style="color: var(--accent-green); font-weight:700;">${e.type}</td>
+        <td style="color: var(--accent-cyan); font-weight:800;">${keyName}</td>
+        <td style="color: var(--accent-yellow); font-weight:800;">${codeNum}</td>
+        <td>${document.fullscreenElement ? 'FULLSCREEN' : 'WINDOW'}</td>
       `;
 
       logTbody.insertBefore(tr, logTbody.firstChild);
@@ -337,71 +429,21 @@
       }
     }
 
-    function escapeHtml(str) {
-      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    // 1. Direct Hardware Keydown Interceptor
-    window.addEventListener('keydown', (e) => {
-      let codeNum = e.keyCode || e.which || 0;
-      let keyName = e.key;
-
-      if (codeNum === 19 || keyName === 'ArrowUp') triggerDPadAction('ArrowUp', 19, 'keydown', 'Native Keydown');
-      else if (codeNum === 20 || keyName === 'ArrowDown') triggerDPadAction('ArrowDown', 20, 'keydown', 'Native Keydown');
-      else if (codeNum === 21 || keyName === 'ArrowLeft') triggerDPadAction('ArrowLeft', 21, 'keydown', 'Native Keydown');
-      else if (codeNum === 22 || keyName === 'ArrowRight') triggerDPadAction('ArrowRight', 22, 'keydown', 'Native Keydown');
-      else if (codeNum === 23 || codeNum === 66 || keyName === 'Enter') triggerDPadAction('Enter (OK)', 23, 'keydown', 'Native Keydown');
-      else if (codeNum === 4 || keyName === 'Escape' || keyName === 'Backspace') triggerDPadAction('Back / Escape', 4, 'keydown', 'Native Keydown');
-      else triggerDPadAction(`Key: ${keyName || codeNum}`, codeNum, 'keydown', 'Native Keydown');
-
-      e.preventDefault();
-    }, true);
-
-    // 2. Wheel & Scroll Interceptor (Translates TV Browser D-Pad Scroll Events -> ArrowUp / ArrowDown / ArrowLeft / ArrowRight)
-    let lastWheelTime = 0;
-    window.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - lastWheelTime < 150) return; // Throttle
-      lastWheelTime = now;
-
-      if (e.deltaY < 0) {
-        triggerDPadAction('ArrowUp', 19, 'wheel (scroll up)', 'TV Browser D-Pad Up Translation');
-      } else if (e.deltaY > 0) {
-        triggerDPadAction('ArrowDown', 20, 'wheel (scroll down)', 'TV Browser D-Pad Down Translation');
-      } else if (e.deltaX < 0) {
-        triggerDPadAction('ArrowLeft', 21, 'wheel (scroll left)', 'TV Browser D-Pad Left Translation');
-      } else if (e.deltaX > 0) {
-        triggerDPadAction('ArrowRight', 22, 'wheel (scroll right)', 'TV Browser D-Pad Right Translation');
-      }
-    }, { passive: false, capture: true });
-
-    // 3. MouseUp / Click Interceptor (Translates TV Browser OK/Select Pointer Clicks -> Enter KeyCode 23)
-    let lastClickTime = 0;
-    ['mouseup', 'click'].forEach(evtType => {
-      window.addEventListener(evtType, (e) => {
-        e.preventDefault();
-        const now = Date.now();
-        if (now - lastClickTime < 200) return;
-        lastClickTime = now;
-
-        if (e.button === 0) {
-          triggerDPadAction('Enter (OK)', 23, evtType, 'TV Browser Pointer Click Translation');
-        } else if (e.button === 2) {
-          triggerDPadAction('Back / Escape', 4, evtType, 'TV Browser Context Translation');
-        }
-      }, true);
+    // Attach listeners
+    ['keydown', 'keyup', 'keypress'].forEach(evt => {
+      window.addEventListener(evt, handleKeyEvent, true);
+      window.addEventListener(evt, handleKeyEvent, false);
+      document.addEventListener(evt, handleKeyEvent, true);
     });
 
     clearBtn.addEventListener('click', () => {
       heroKeycode.textContent = '--';
-      heroTitle.textContent = 'Press D-Pad arrows or OK on remote';
-      valEvent.textContent = 'NONE';
+      heroTitle.textContent = 'Press D-Pad buttons or OK on remote';
       valKey.textContent = '--';
-      valSource.textContent = '--';
+      valCode.textContent = '--';
       logTbody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="5">No D-Pad keyactions detected yet. Press remote buttons...</td>
+          <td colspan="5">No hardware keypresses recorded yet. Press remote buttons...</td>
         </tr>
       `;
     });
