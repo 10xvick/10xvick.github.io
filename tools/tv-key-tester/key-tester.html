@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Android TV Remote Keycode Tester</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(22, 26, 38, 0.85);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f0f4fd;
+      --text-muted: #8a96b4;
+      --accent-cyan: #00f0ff;
+      --accent-green: #00ff88;
+      --accent-magenta: #ff007f;
+      --accent-yellow: #ffcc00;
+      --font-main: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.15) 0%, transparent 45%);
+    }
+
+    /* Flash Overlay Animation */
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.05s ease-out;
+    }
+
+    .flash-overlay.active-keydown {
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.3) 0%, transparent 70%);
+      opacity: 1;
+    }
+
+    .flash-overlay.active-keyup {
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, transparent 70%);
+      opacity: 1;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pulse-dot {
+      width: 14px;
+      height: 14px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--accent-cyan);
+    }
+
+    /* Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .log-card {
+      grid-column: 1 / -1;
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    /* Hero Box */
+    .hero-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+      border-color: rgba(0, 240, 255, 0.4);
+    }
+
+    .hero-card.flash-down {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+      transform: scale(1.01);
+    }
+
+    .hero-card.flash-up {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+    }
+
+    .hero-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+    }
+
+    .event-type-badge {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(0, 255, 136, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .hero-body {
+      text-align: center;
+      padding: 16px 0;
+    }
+
+    .keycode-display {
+      font-family: var(--font-mono);
+      font-size: 6rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--accent-green);
+      text-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+    }
+
+    .key-name-display {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-top: 12px;
+      color: #ffffff;
+      word-break: break-word;
+    }
+
+    .hero-details {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 12px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .detail-val {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 4px;
+      color: #ffffff;
+    }
+
+    .detail-val.highlight {
+      color: var(--accent-cyan);
+    }
+
+    /* Info Card & Meta Flags */
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .meta-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .meta-badge, .meta-val {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .meta-badge.is-true {
+      background: rgba(255, 0, 127, 0.2);
+      color: var(--accent-magenta);
+      border: 1px solid rgba(255, 0, 127, 0.4);
+    }
+
+    /* TV Cheatsheet */
+    .tv-cheatsheet {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tv-cheatsheet h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+    }
+
+    .tv-cheatsheet ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tv-cheatsheet li {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    kbd {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Log Card Table */
+    .log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .clear-btn {
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 8px 18px;
+      border-radius: 10px;
+      background: rgba(255, 0, 127, 0.2);
+      color: var(--accent-magenta);
+      border: 1px solid rgba(255, 0, 127, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .clear-btn:hover, .clear-btn:focus {
+      background: var(--accent-magenta);
+      color: #ffffff;
+      outline: none;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+    }
+
+    .log-table-wrapper {
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    .log-table th {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 12px 16px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+    }
+
+    .log-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .log-table tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .log-table .type-keydown {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    .log-table .type-keyup {
+      color: var(--accent-cyan);
+    }
+
+    .log-table .keycode-num {
+      font-weight: 800;
+      color: var(--accent-yellow);
+    }
+
+    .empty-row td {
+      text-align: center;
+      padding: 30px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div id="flash-overlay" class="flash-overlay"></div>
+
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <span class="pulse-dot"></span>
+        <h1>Android TV Keycode Tester</h1>
+      </div>
+      <div class="status-badge" id="status-badge">Awaiting Key Press...</div>
+    </header>
+
+    <main class="main-grid">
+      <!-- Flash Hero Box -->
+      <section class="card hero-card" id="hero-card">
+        <div class="hero-header">
+          <span class="label">LAST DETECTED KEY</span>
+          <span class="event-type-badge" id="hero-event-type">EVENT: NONE</span>
+        </div>
+        
+        <div class="hero-body">
+          <div class="keycode-display" id="hero-keycode">--</div>
+          <div class="key-name-display" id="hero-keyname">Press any remote button</div>
+        </div>
+
+        <div class="hero-details">
+          <div class="detail-item">
+            <span class="detail-label">e.key</span>
+            <span class="detail-val" id="val-key">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">e.keyCode</span>
+            <span class="detail-val highlight" id="val-keycode">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">e.code</span>
+            <span class="detail-val" id="val-code">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">e.which</span>
+            <span class="detail-val" id="val-which">--</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Event Properties Grid -->
+      <section class="card info-card">
+        <h2 class="card-title">Event Flags & Metadata</h2>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Repeat</span>
+            <span class="meta-badge" id="flag-repeat">false</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Location</span>
+            <span class="meta-val" id="flag-location">0</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Shift</span>
+            <span class="meta-badge" id="flag-shift">false</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Ctrl</span>
+            <span class="meta-badge" id="flag-ctrl">false</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Alt</span>
+            <span class="meta-badge" id="flag-alt">false</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Meta</span>
+            <span class="meta-badge" id="flag-meta">false</span>
+          </div>
+        </div>
+        
+        <div class="tv-cheatsheet">
+          <h3>Android TV Quick Reference</h3>
+          <ul>
+            <li><kbd>D-Pad Up</kbd> : <span>19 (ArrowUp)</span></li>
+            <li><kbd>D-Pad Down</kbd> : <span>20 (ArrowDown)</span></li>
+            <li><kbd>D-Pad Left</kbd> : <span>21 (ArrowLeft)</span></li>
+            <li><kbd>D-Pad Right</kbd> : <span>22 (ArrowRight)</span></li>
+            <li><kbd>Select/Center</kbd> : <span>23 / 66 (Enter)</span></li>
+            <li><kbd>Back Button</kbd> : <span>4 / 27 / 461 / 10009</span></li>
+            <li><kbd>Media Play/Pause</kbd> : <span>179 / 126</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Log History -->
+      <section class="card log-card">
+        <div class="log-header">
+          <h2 class="card-title">Keypress History (<span id="log-count">0</span>)</h2>
+          <button id="clear-btn" class="clear-btn" tabindex="0">Clear Log</button>
+        </div>
+        
+        <div class="log-table-wrapper">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Key</th>
+                <th>KeyCode</th>
+                <th>Code</th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody">
+              <tr class="empty-row">
+                <td colspan="5">No keypresses recorded yet. Press any remote button...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // DOM Element References
+    const flashOverlay = document.getElementById('flash-overlay');
+    const heroCard = document.getElementById('hero-card');
+    const heroEventType = document.getElementById('hero-event-type');
+    const heroKeycode = document.getElementById('hero-keycode');
+    const heroKeyname = document.getElementById('hero-keyname');
+
+    const valKey = document.getElementById('val-key');
+    const valKeycode = document.getElementById('val-keycode');
+    const valCode = document.getElementById('val-code');
+    const valWhich = document.getElementById('val-which');
+
+    const flagRepeat = document.getElementById('flag-repeat');
+    const flagLocation = document.getElementById('flag-location');
+    const flagShift = document.getElementById('flag-shift');
+    const flagCtrl = document.getElementById('flag-ctrl');
+    const flagAlt = document.getElementById('flag-alt');
+    const flagMeta = document.getElementById('flag-meta');
+
+    const statusBadge = document.getElementById('status-badge');
+    const logTbody = document.getElementById('log-tbody');
+    const logCount = document.getElementById('log-count');
+    const clearBtn = document.getElementById('clear-btn');
+
+    let keyHistory = [];
+    let flashTimer = null;
+
+    // Audio Context for subtle audio feedback on TV button press
+    let audioCtx = null;
+    function playBeep(freq = 440, type = 'sine') {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch (err) {
+        // Ignore audio errors if audio context is blocked
+      }
+    }
+
+    // Handle Key Events
+    function handleKeyEvent(e) {
+      // Prevent default scrolling for D-Pad / Arrow keys / Backspace so TV interface stays steady
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4) {
+        e.preventDefault();
+      }
+
+      const isDown = e.type === 'keydown';
+      const keyName = e.key === ' ' ? 'Space' : e.key;
+      const codeNum = e.keyCode || e.which || 0;
+
+      // Audio feedback
+      if (isDown) {
+        playBeep(codeNum > 0 ? 300 + (codeNum % 400) : 440, 'triangle');
+      }
+
+      // Update Status Badge
+      statusBadge.textContent = `Active Event: ${e.type.toUpperCase()}`;
+
+      // Update Hero Display
+      heroEventType.textContent = `EVENT: ${e.type.toUpperCase()}`;
+      heroEventType.style.background = isDown ? 'rgba(0, 255, 136, 0.2)' : 'rgba(0, 240, 255, 0.2)';
+      heroEventType.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
+
+      heroKeycode.textContent = codeNum;
+      heroKeycode.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
+
+      heroKeyname.textContent = keyName || 'Unknown Key';
+
+      valKey.textContent = JSON.stringify(e.key);
+      valKeycode.textContent = codeNum;
+      valCode.textContent = JSON.stringify(e.code);
+      valWhich.textContent = e.which || '--';
+
+      // Update Flags
+      updateFlag(flagRepeat, e.repeat);
+      flagLocation.textContent = e.location;
+      updateFlag(flagShift, e.shiftKey);
+      updateFlag(flagCtrl, e.ctrlKey);
+      updateFlag(flagAlt, e.altKey);
+      updateFlag(flagMeta, e.metaKey);
+
+      // Flash UI Animation
+      flashOverlay.className = `flash-overlay ${isDown ? 'active-keydown' : 'active-keyup'}`;
+      heroCard.className = `card hero-card ${isDown ? 'flash-down' : 'flash-up'}`;
+
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => {
+        flashOverlay.className = 'flash-overlay';
+        heroCard.className = 'card hero-card';
+      }, 180);
+
+      // Append to History Log
+      addHistoryLog({
+        time: new Date().toLocaleTimeString(),
+        type: e.type,
+        key: keyName,
+        keyCode: codeNum,
+        code: e.code
+      });
+    }
+
+    function updateFlag(el, isTrue) {
+      el.textContent = isTrue ? 'TRUE' : 'FALSE';
+      if (isTrue) {
+        el.classList.add('is-true');
+      } else {
+        el.classList.remove('is-true');
+      }
+    }
+
+    function addHistoryLog(item) {
+      keyHistory.unshift(item);
+      if (keyHistory.length > 50) keyHistory.pop();
+
+      logCount.textContent = keyHistory.length;
+
+      if (logTbody.querySelector('.empty-row')) {
+        logTbody.innerHTML = '';
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.time}</td>
+        <td class="${item.type === 'keydown' ? 'type-keydown' : 'type-keyup'}">${item.type}</td>
+        <td>${escapeHtml(item.key)}</td>
+        <td class="keycode-num">${item.keyCode}</td>
+        <td>${escapeHtml(item.code)}</td>
+      `;
+
+      logTbody.insertBefore(tr, logTbody.firstChild);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Event Listeners
+    window.addEventListener('keydown', handleKeyEvent, true);
+    window.addEventListener('keyup', handleKeyEvent, true);
+
+    clearBtn.addEventListener('click', () => {
+      keyHistory = [];
+      logCount.textContent = '0';
+      logTbody.innerHTML = `
+        <tr class="empty-row">
+          <td colspan="5">Log cleared. Press any remote button...</td>
+        </tr>
+      `;
+    });
+  </script>
+</body>
+</html>
