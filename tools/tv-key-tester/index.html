@@ -101,30 +101,21 @@
       -webkit-text-fill-color: var(--accent-cyan);
     }
 
-    /* Fullscreen Banner Button */
+    /* Fullscreen Status Banner */
     .fs-banner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 24px;
+      padding: 16px 24px;
       border-radius: 16px;
-      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 240, 255, 0.2) 100%);
+      background: rgba(0, 255, 136, 0.15);
       border: 2px solid var(--accent-green);
-      box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
-      cursor: pointer;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .fs-banner:focus, .fs-banner:hover {
-      background: var(--accent-green);
-      color: #000000;
-      transform: scale(1.01);
     }
 
     .fs-text {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 800;
+      color: var(--accent-green);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -136,8 +127,8 @@
       font-weight: 700;
       padding: 6px 14px;
       border-radius: 20px;
-      background: rgba(0, 0, 0, 0.4);
-      color: #ffffff;
+      background: var(--accent-green);
+      color: #000000;
     }
 
     /* Hero Display Box */
@@ -257,31 +248,31 @@
   <div class="container">
     <header class="header">
       <div class="brand">
-        <h1>Android TV Keycode Tester <span class="version-badge">v2.0.0</span></h1>
+        <h1>Android TV Keycode Tester <span class="version-badge">v2.1.0</span></h1>
       </div>
       <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-cyan);" id="status-badge">
-        Media Player Fullscreen Mode
+        Fullscreen Auto-Lock & Back-Key Blocker
       </div>
     </header>
 
-    <!-- Fullscreen Mode Activator Banner -->
-    <button id="fs-banner" class="fs-banner" tabindex="0" autofocus>
+    <!-- Fullscreen Status Banner -->
+    <div class="fs-banner">
       <div class="fs-text">
-        <span>🎬</span>
-        <span>CLICK / PRESS OK TO ENTER FULLSCREEN (ENABLES RAW TV REMOTE KEYS)</span>
+        <span>🔒</span>
+        <span>AUTO FULLSCREEN LOCKED & BACK KEY PREVENTED</span>
       </div>
-      <div class="fs-status" id="fs-status-text">FULLSCREEN: OFF</div>
-    </button>
+      <div class="fs-status" id="fs-status-text">FULLSCREEN LOCKED</div>
+    </div>
 
     <!-- Hero Card -->
     <section class="hero-card" id="hero-card">
-      <div class="hero-label">DETECTED HARDWARE KEYCODE</div>
+      <div class="hero-label">DETECTED HARDWARE KEYCODE (37-40 / 13 / 4)</div>
       <div class="hero-keycode" id="hero-keycode">--</div>
-      <div class="hero-title" id="hero-title">Press D-Pad buttons or OK on remote</div>
+      <div class="hero-title" id="hero-title">Press D-Pad arrows (37-40), OK (13/23), or Back</div>
       <div class="hero-details">
         <div>e.key: <span id="val-key">--</span></div>
         <div>e.keyCode: <span id="val-code">--</span></div>
-        <div>Fullscreen: <span id="val-fs">INACTIVE</span></div>
+        <div>Back Key Status: <span id="val-back">PREVENTED & BLOCKED</span></div>
       </div>
     </section>
 
@@ -300,7 +291,7 @@
               <th>Event Type</th>
               <th>Key Name (e.key)</th>
               <th>KeyCode</th>
-              <th>Fullscreen Mode</th>
+              <th>Action Result</th>
             </tr>
           </thead>
           <tbody id="log-tbody">
@@ -320,15 +311,38 @@
     const heroTitle = document.getElementById('hero-title');
     const valKey = document.getElementById('val-key');
     const valCode = document.getElementById('val-code');
-    const valFs = document.getElementById('val-fs');
-
-    const fsBanner = document.getElementById('fs-banner');
+    const valBack = document.getElementById('val-back');
     const fsStatusText = document.getElementById('fs-status-text');
 
     const logTbody = document.getElementById('log-tbody');
     const clearBtn = document.getElementById('clear-btn');
 
     let flashTimer = null;
+
+    // 1. AUTOMATIC FULLSCREEN LOCK (Auto-requests without waiting for button click)
+    function autoLockFullscreen() {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().then(() => {
+          fsStatusText.textContent = 'FULLSCREEN LOCKED';
+        }).catch(err => {
+          // Silently retry on next event if browser required gesture
+        });
+      }
+    }
+
+    // Trigger auto-fullscreen on load, click, keydown, mousemove, and fullscreen exit attempt
+    window.addEventListener('load', autoLockFullscreen);
+    window.addEventListener('click', autoLockFullscreen, true);
+    window.addEventListener('pointerdown', autoLockFullscreen, true);
+    window.addEventListener('mousemove', autoLockFullscreen, true);
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        fsStatusText.textContent = 'RE-LOCKING FULLSCREEN...';
+        setTimeout(autoLockFullscreen, 50);
+      } else {
+        fsStatusText.textContent = 'FULLSCREEN LOCKED';
+      }
+    });
 
     // Audio Context
     let audioCtx = null;
@@ -349,51 +363,31 @@
       } catch (e) {}
     }
 
-    // Toggle Fullscreen Mode
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().then(() => {
-          fsStatusText.textContent = 'FULLSCREEN: ON (RAW REMOTE KEYS ACTIVE)';
-          fsStatusText.style.background = 'var(--accent-green)';
-          fsStatusText.style.color = '#000000';
-          valFs.textContent = 'ACTIVE';
-        }).catch(err => {
-          console.warn("Fullscreen request error:", err);
-        });
-      } else {
-        document.exitFullscreen().then(() => {
-          fsStatusText.textContent = 'FULLSCREEN: OFF';
-          fsStatusText.style.background = 'rgba(0, 0, 0, 0.4)';
-          fsStatusText.style.color = '#ffffff';
-          valFs.textContent = 'INACTIVE';
-        });
-      }
-    }
-
-    fsBanner.addEventListener('click', toggleFullscreen);
-    document.addEventListener('fullscreenchange', () => {
-      const isFs = Boolean(document.fullscreenElement);
-      fsStatusText.textContent = isFs ? 'FULLSCREEN: ON (RAW REMOTE KEYS ACTIVE)' : 'FULLSCREEN: OFF';
-      valFs.textContent = isFs ? 'ACTIVE' : 'INACTIVE';
-    });
-
-    // RAW KEYBOARD EVENT LISTENER
+    // 2. RAW KEYBOARD EVENT LISTENER + PREVENT FULLSCREEN EXIT & PREVENT BACK KEY
     function handleKeyEvent(e) {
+      // Auto-lock fullscreen on any keypress
+      autoLockFullscreen();
+
       const codeNum = e.keyCode || e.which || 0;
       let keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
       const isDown = e.type === 'keydown';
 
-      // Smart TV Keycode Fallbacks
-      if (codeNum === 19) keyName = 'ArrowUp';
-      if (codeNum === 20) keyName = 'ArrowDown';
-      if (codeNum === 21) keyName = 'ArrowLeft';
-      if (codeNum === 22) keyName = 'ArrowRight';
-      if (codeNum === 23 || codeNum === 66) keyName = 'Enter';
-      if (codeNum === 4 || codeNum === 461 || codeNum === 10009) keyName = 'Escape';
+      // Directional keys: 37 (Left), 38 (Up), 39 (Right), 40 (Down)
+      if (codeNum === 38 || codeNum === 19 || keyName === 'Up') keyName = 'ArrowUp (38/19)';
+      if (codeNum === 40 || codeNum === 20 || keyName === 'Down') keyName = 'ArrowDown (40/20)';
+      if (codeNum === 37 || codeNum === 21 || keyName === 'Left') keyName = 'ArrowLeft (37/21)';
+      if (codeNum === 39 || codeNum === 22 || keyName === 'Right') keyName = 'ArrowRight (39/22)';
+      
+      // Select / OK keys: 13, 23, 66
+      if (codeNum === 13 || codeNum === 23 || codeNum === 66 || keyName === 'Enter') keyName = 'Enter / OK (13/23)';
 
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(keyName) || codeNum === 4) {
-        e.preventDefault();
-      }
+      // Back / Return / Escape keys: 4 (Android TV), 27 (Esc), 8 (Backspace), 461 (LG), 10009 (Tizen)
+      const isBackKey = (codeNum === 4 || codeNum === 27 || codeNum === 8 || codeNum === 461 || codeNum === 10009 || keyName === 'Escape' || keyName === 'Backspace');
+      if (isBackKey) keyName = 'Back Button (BLOCKED)';
+
+      // CRITICAL: Block default browser actions for OK, Back, and Arrow keys so OK doesn't exit fullscreen and Back doesn't leave site!
+      e.preventDefault();
+      e.stopPropagation();
 
       if (isDown) playBeep(300 + (codeNum % 400));
 
@@ -401,6 +395,7 @@
       heroTitle.textContent = keyName;
       valKey.textContent = JSON.stringify(e.key || '');
       valCode.textContent = codeNum;
+      valBack.textContent = isBackKey ? 'BACK KEY PREVENTED!' : 'PREVENTED & HANDLED';
 
       // Flash
       flashOverlay.className = 'flash-overlay active';
@@ -420,7 +415,7 @@
         <td style="color: var(--accent-green); font-weight:700;">${e.type}</td>
         <td style="color: var(--accent-cyan); font-weight:800;">${keyName}</td>
         <td style="color: var(--accent-yellow); font-weight:800;">${codeNum}</td>
-        <td>${document.fullscreenElement ? 'FULLSCREEN' : 'WINDOW'}</td>
+        <td style="color: ${isBackKey ? 'var(--accent-magenta)' : 'var(--accent-green)'}; font-weight:700;">${isBackKey ? 'BACK BLOCKED' : 'HANDLED (NO EXIT)'}</td>
       `;
 
       logTbody.insertBefore(tr, logTbody.firstChild);
@@ -436,9 +431,11 @@
       document.addEventListener(evt, handleKeyEvent, true);
     });
 
-    clearBtn.addEventListener('click', () => {
+    clearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       heroKeycode.textContent = '--';
-      heroTitle.textContent = 'Press D-Pad buttons or OK on remote';
+      heroTitle.textContent = 'Press D-Pad arrows (37-40), OK (13/23), or Back';
       valKey.textContent = '--';
       valCode.textContent = '--';
       logTbody.innerHTML = `
@@ -446,6 +443,7 @@
           <td colspan="5">No hardware keypresses recorded yet. Press remote buttons...</td>
         </tr>
       `;
+      autoLockFullscreen();
     });
   </script>
 </body>
