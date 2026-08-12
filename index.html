@@ -310,6 +310,8 @@
       
       // Known fallback links in case the API limit is hit or network request fails
       const fallbackProjects = [
+        { title: "Netflix WebGL", url: `https://${USERNAME}.github.io/apps/netflix/`, repoUrl: `https://github.com/${USERNAME}/netflix`, category: "apps", desc: "Interactive 3D WebGL Netflix TV UI clone powered by Three.js and TMDB API." },
+        { title: "TV Keycode Tester", url: `https://${USERNAME}.github.io/tools/tv-key-tester/`, repoUrl: `https://github.com/${USERNAME}/netflix`, category: "tools", desc: "Android TV & Smart TV remote control keycode visualizer and event inspector." },
         { title: "SNES Emulator", url: `https://${USERNAME}.github.io/emulator/snes/`, repoUrl: `https://github.com/${USERNAME}/snes-emulator`, category: "emulator", desc: "A browser-based Super Nintendo Entertainment System (SNES) emulator written in TypeScript." },
         { title: "World Simulator", url: `https://${USERNAME}.github.io/games/sims/`, repoUrl: `https://github.com/${USERNAME}/sims`, category: "games", desc: "A sophisticated life and social simulator featuring needs, career progression, autonomy, and emotions." },
         { title: "Arcade Station", url: `https://${USERNAME}.github.io/games/arcade-station/`, repoUrl: `https://github.com/${USERNAME}/arcade-station`, category: "games", desc: "A 3D WebGL arcade cabinet playground featuring 49 built-in classic retro games." },
@@ -324,6 +326,8 @@
         let lastPart = parts[parts.length - 1];
         
         const overrides = {
+          'netflix': 'Netflix WebGL',
+          'tv-key-tester': 'TV Keycode Tester',
           'snes': 'SNES Emulator',
           'sims': 'World Simulator',
           'arcade-station': 'Arcade Station',
@@ -347,6 +351,7 @@
         if (path.includes('emulator')) return 'emulator';
         if (path.includes('games') || path.includes('spinner') || path.includes('game') || path.includes('arcade')) return 'games';
         if (path.includes('tools') || path.includes('chat') || path.includes('image')) return 'tools';
+        if (path.includes('apps') || path.includes('netflix')) return 'apps';
         return 'playground';
       }
 
