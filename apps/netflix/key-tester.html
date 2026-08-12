@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Android TV Remote & Pointer Input Tester</title>
+  <title>Android TV Remote D-Pad Keycode Tester</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -18,6 +18,7 @@
       --accent-green: #00ff88;
       --accent-magenta: #ff007f;
       --accent-yellow: #ffcc00;
+      --accent-orange: #ff9900;
       --font-main: 'Outfit', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -51,17 +52,12 @@
     }
 
     .flash-overlay.active-keydown {
-      background: radial-gradient(circle, rgba(0, 255, 136, 0.35) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.4) 0%, transparent 70%);
       opacity: 1;
     }
 
     .flash-overlay.active-pointer {
-      background: radial-gradient(circle, rgba(0, 240, 255, 0.35) 0%, transparent 70%);
-      opacity: 1;
-    }
-
-    .flash-overlay.active-keyup {
-      background: radial-gradient(circle, rgba(255, 0, 127, 0.25) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 153, 0, 0.3) 0%, transparent 70%);
       opacity: 1;
     }
 
@@ -70,7 +66,7 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
     }
 
     /* Header */
@@ -139,6 +135,30 @@
       color: var(--accent-green);
     }
 
+    /* Mode Banner Alert */
+    .mode-alert-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      transition: all 0.2s ease;
+    }
+
+    .mode-alert-banner.mode-dpad {
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      color: var(--accent-green);
+    }
+
+    .mode-alert-banner.mode-mouse {
+      background: rgba(255, 153, 0, 0.18);
+      border: 1px solid rgba(255, 153, 0, 0.5);
+      color: var(--accent-orange);
+    }
+
     /* Grid Layout */
     .main-grid {
       display: grid;
@@ -171,14 +191,13 @@
 
     .hero-card.flash-down {
       border-color: var(--accent-green);
-      box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+      box-shadow: 0 0 45px rgba(0, 255, 136, 0.45);
       transform: scale(1.01);
     }
 
     .hero-card.flash-pointer {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
-      transform: scale(1.01);
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 40px rgba(255, 153, 0, 0.4);
     }
 
     .hero-header {
@@ -212,15 +231,15 @@
 
     .keycode-display {
       font-family: var(--font-mono);
-      font-size: 5.5rem;
+      font-size: 6rem;
       font-weight: 900;
       line-height: 1;
       color: var(--accent-green);
-      text-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+      text-shadow: 0 0 35px rgba(0, 255, 136, 0.4);
     }
 
     .key-name-display {
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       font-weight: 800;
       margin-top: 12px;
       color: #ffffff;
@@ -408,12 +427,7 @@
     }
 
     .log-table .type-pointer {
-      color: var(--accent-cyan);
-      font-weight: 700;
-    }
-
-    .log-table .type-gamepad {
-      color: var(--accent-yellow);
+      color: var(--accent-orange);
       font-weight: 700;
     }
 
@@ -429,17 +443,28 @@
     }
   </style>
 </head>
-<body>
+<body tabindex="0">
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
         <span class="pulse-dot"></span>
-        <h1>Android TV Universal Input Tester <span class="version-badge">v1.3.1</span></h1>
+        <h1>Android TV D-Pad Keycode Tester <span class="version-badge">v1.4.0</span></h1>
       </div>
-      <div class="status-badge" id="status-badge">Listening for Keys & Air Mouse Pointers</div>
+      <div class="status-badge" id="status-badge">Awaiting Input Mode Detection...</div>
     </header>
+
+    <!-- Remote Mode Guidance Banner -->
+    <div id="mode-alert-banner" class="mode-alert-banner mode-dpad">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="mode-icon" style="font-size: 1.4rem;">🎮</span>
+        <span id="mode-text">PRESS D-PAD ARROWS OR OK ON YOUR REMOTE CONTROL...</span>
+      </div>
+      <span id="mode-hint" style="font-size: 0.85rem; font-weight: 600; opacity: 0.9;">
+        Toggle Mouse 🖱️ button on physical remote to switch between Keyboard & Air Mouse
+      </span>
+    </div>
 
     <main class="main-grid">
       <!-- Flash Hero Box -->
@@ -451,24 +476,24 @@
         
         <div class="hero-body">
           <div class="keycode-display" id="hero-keycode">--</div>
-          <div class="key-name-display" id="hero-keyname">Press remote button or move cursor</div>
+          <div class="key-name-display" id="hero-keyname">Press D-Pad button</div>
         </div>
 
         <div class="hero-details">
           <div class="detail-item">
-            <span class="detail-label">Input Source</span>
+            <span class="detail-label">e.key</span>
             <span class="detail-val" id="val-source">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">Key / Button Code</span>
+            <span class="detail-label">e.keyCode</span>
             <span class="detail-val highlight" id="val-keycode">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">Name / Identifier</span>
+            <span class="detail-label">e.code</span>
             <span class="detail-val" id="val-code">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">Cursor / Details</span>
+            <span class="detail-label">Input Mode</span>
             <span class="detail-val" id="val-which">--</span>
           </div>
         </div>
@@ -476,41 +501,43 @@
 
       <!-- Event Properties Grid -->
       <section class="card info-card">
-        <h2 class="card-title">Live Input Metadata</h2>
+        <h2 class="card-title">Live Hardware Input State</h2>
         <div class="meta-grid">
           <div class="meta-item">
-            <span class="meta-label">Event Type</span>
-            <span class="meta-badge" id="flag-repeat">NONE</span>
+            <span class="meta-label">Active Mode</span>
+            <span class="meta-badge" id="flag-repeat">UNKNOWN</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Pointer X, Y</span>
-            <span class="meta-val" id="flag-location">0, 0</span>
+            <span class="meta-label">Repeat Key</span>
+            <span class="meta-val" id="flag-location">false</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Target DOM</span>
             <span class="meta-badge" id="flag-shift">BODY</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Gamepad</span>
-            <span class="meta-badge" id="flag-ctrl">OFFLINE</span>
+            <span class="meta-label">D-Pad Up</span>
+            <span class="meta-badge" id="flag-up">19</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Air Mouse</span>
-            <span class="meta-badge" id="flag-alt">ACTIVE</span>
+            <span class="meta-label">D-Pad Down</span>
+            <span class="meta-badge" id="flag-down">20</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">D-Pad Key</span>
-            <span class="meta-badge" id="flag-meta">READY</span>
+            <span class="meta-label">Select OK</span>
+            <span class="meta-badge" id="flag-ok">23 / 66</span>
           </div>
         </div>
         
         <div class="tv-cheatsheet">
-          <h3>TV Input Reference Modes</h3>
+          <h3>Android TV D-Pad Keycode Map</h3>
           <ul>
-            <li><kbd>D-Pad Remote</kbd> : <span>KeyCodes 19,20,21,22,23</span></li>
-            <li><kbd>Air Mouse Pointer</kbd> : <span>Click, PointerDown (Btn 0)</span></li>
-            <li><kbd>Back / Exit Button</kbd> : <span>Key 4 / ContextMenu / Esc</span></li>
-            <li><kbd>Bluetooth Gamepad</kbd> : <span>HTML5 Gamepad API</span></li>
+            <li><kbd>D-Pad Up</kbd> : <span>19 (ArrowUp)</span></li>
+            <li><kbd>D-Pad Down</kbd> : <span>20 (ArrowDown)</span></li>
+            <li><kbd>D-Pad Left</kbd> : <span>21 (ArrowLeft)</span></li>
+            <li><kbd>D-Pad Right</kbd> : <span>22 (ArrowRight)</span></li>
+            <li><kbd>Select / Center</kbd> : <span>23 / 66 (Enter)</span></li>
+            <li><kbd>Back / Escape</kbd> : <span>4 / 27 / 461</span></li>
           </ul>
         </div>
       </section>
@@ -518,7 +545,7 @@
       <!-- Log History -->
       <section class="card log-card">
         <div class="log-header">
-          <h2 class="card-title">Input Event Log (<span id="log-count">0</span>)</h2>
+          <h2 class="card-title">Recorded Hardware Key Log (<span id="log-count">0</span>)</h2>
           <button id="clear-btn" class="clear-btn" tabindex="0">Clear Log</button>
         </div>
         
@@ -527,15 +554,15 @@
             <thead>
               <tr>
                 <th>Time</th>
-                <th>Category</th>
+                <th>Mode</th>
                 <th>Event Type</th>
-                <th>Code / Button</th>
+                <th>KeyCode (Name)</th>
                 <th>Details</th>
               </tr>
             </thead>
             <tbody id="log-tbody">
               <tr class="empty-row">
-                <td colspan="5">No input events recorded yet. Move remote or press buttons...</td>
+                <td colspan="5">No keypresses recorded yet. Press D-Pad buttons on remote...</td>
               </tr>
             </tbody>
           </table>
@@ -560,19 +587,21 @@
     const flagRepeat = document.getElementById('flag-repeat');
     const flagLocation = document.getElementById('flag-location');
     const flagShift = document.getElementById('flag-shift');
-    const flagCtrl = document.getElementById('flag-ctrl');
-    const flagAlt = document.getElementById('flag-alt');
-    const flagMeta = document.getElementById('flag-meta');
+
+    const modeAlertBanner = document.getElementById('mode-alert-banner');
+    const modeIcon = document.getElementById('mode-icon');
+    const modeText = document.getElementById('mode-text');
+    const modeHint = document.getElementById('mode-hint');
 
     const statusBadge = document.getElementById('status-badge');
     const logTbody = document.getElementById('log-tbody');
     const logCount = document.getElementById('log-count');
     const clearBtn = document.getElementById('clear-btn');
 
-    let inputHistory = [];
+    let keyHistory = [];
     let flashTimer = null;
 
-    // Audio Context for subtle audio feedback on TV button press / click
+    // Audio Context for sound feedback
     let audioCtx = null;
     function playBeep(freq = 440, type = 'sine') {
       try {
@@ -591,33 +620,47 @@
       } catch (err) {}
     }
 
-    // Process & Display Input Event
-    function processInputEvent(data) {
-      playBeep(data.soundFreq || 500, 'triangle');
+    // 1. D-PAD KEYBOARD EVENT HANDLER (Primary focus)
+    function handleKeyboardEvent(e) {
+      // Prevent default scrolling for D-Pad / Arrow keys / Backspace so TV interface stays steady
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
+        e.preventDefault();
+      }
 
-      statusBadge.textContent = `Active: ${data.category} - ${data.eventType.toUpperCase()}`;
+      const codeNum = e.keyCode || e.which || 0;
+      const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
+      const isDown = e.type === 'keydown';
 
-      heroEventType.textContent = `${data.category}: ${data.eventType.toUpperCase()}`;
-      heroEventType.style.background = data.isPointer ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 255, 136, 0.2)';
-      heroEventType.style.color = data.isPointer ? 'var(--accent-cyan)' : 'var(--accent-green)';
+      // Update Banner to Confirm KEYBOARD D-PAD MODE
+      modeAlertBanner.className = 'mode-alert-banner mode-dpad';
+      modeIcon.textContent = '✅';
+      modeText.textContent = `RAW KEYBOARD D-PAD MODE ACTIVE (${keyName} / KeyCode ${codeNum})`;
+      modeHint.textContent = 'Remote is sending raw hardware keyboard keycodes!';
 
-      heroKeycode.textContent = data.codeNum;
-      heroKeycode.style.color = data.isPointer ? 'var(--accent-cyan)' : 'var(--accent-green)';
+      statusBadge.textContent = `KEY: ${keyName} (${codeNum})`;
+      flagRepeat.textContent = 'HARDWARE KEYBOARD';
 
-      heroKeyname.textContent = data.title;
+      heroEventType.textContent = `KEYBOARD: ${e.type.toUpperCase()}`;
+      heroEventType.style.background = isDown ? 'rgba(0, 255, 136, 0.2)' : 'rgba(0, 240, 255, 0.2)';
+      heroEventType.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
 
-      valSource.textContent = data.category;
-      valKeycode.textContent = data.codeNum;
-      valCode.textContent = data.codeName;
-      valWhich.textContent = data.extra;
+      heroKeycode.textContent = codeNum;
+      heroKeycode.style.color = 'var(--accent-green)';
 
-      flagRepeat.textContent = data.eventType;
-      flagLocation.textContent = data.coords || 'N/A';
-      flagShift.textContent = data.targetName || 'WINDOW';
+      heroKeyname.textContent = keyName;
+
+      valSource.textContent = JSON.stringify(e.key || '');
+      valKeycode.textContent = codeNum;
+      valCode.textContent = JSON.stringify(e.code || '');
+      valWhich.textContent = 'KEYBOARD D-PAD';
+
+      flagLocation.textContent = Boolean(e.repeat) ? 'TRUE' : 'FALSE';
+
+      if (isDown) playBeep(300 + (codeNum % 400), 'triangle');
 
       // Flash overlay
-      flashOverlay.className = `flash-overlay ${data.isPointer ? 'active-pointer' : 'active-keydown'}`;
-      heroCard.className = `card hero-card ${data.isPointer ? 'flash-pointer' : 'flash-down'}`;
+      flashOverlay.className = 'flash-overlay active-keydown';
+      heroCard.className = 'card hero-card flash-down';
 
       clearTimeout(flashTimer);
       flashTimer = setTimeout(() => {
@@ -625,29 +668,84 @@
         heroCard.className = 'card hero-card';
       }, 180);
 
-      // Append to history
-      addHistoryLog(data);
+      addHistoryLog({
+        mode: 'KEYBOARD',
+        type: e.type,
+        codeNum: codeNum,
+        name: keyName,
+        details: `code: ${e.code || '--'}`
+      });
     }
 
-    function addHistoryLog(data) {
-      inputHistory.unshift(data);
-      if (inputHistory.length > 50) inputHistory.pop();
+    // 2. AIR MOUSE POINTER EVENT WARNING HANDLER
+    function handlePointerEvent(e) {
+      if (e.type === 'mousemove' || e.type === 'pointermove') return;
 
-      logCount.textContent = inputHistory.length;
+      const btnMap = { '-1': 'Move', 0: 'Left Click (OK)', 1: 'Middle Click', 2: 'Right Click (Back)' };
+      const btnName = btnMap[e.button] !== undefined ? btnMap[e.button] : `Button ${e.button}`;
+
+      // Update Banner to Warn user that AIR MOUSE MODE is active on remote
+      modeAlertBanner.className = 'mode-alert-banner mode-mouse';
+      modeIcon.textContent = '⚠️';
+      modeText.textContent = `AIR MOUSE MODE DETECTED (${btnName})`;
+      modeHint.textContent = 'PRESS THE MOUSE 🖱️ TOGGLE BUTTON ON YOUR REMOTE CONTROL TO SWITCH TO KEYBOARD D-PAD MODE!';
+
+      statusBadge.textContent = `AIR MOUSE (${btnName})`;
+      flagRepeat.textContent = 'AIR MOUSE CURSOR';
+
+      heroEventType.textContent = `AIR MOUSE: ${e.type.toUpperCase()}`;
+      heroEventType.style.background = 'rgba(255, 153, 0, 0.2)';
+      heroEventType.style.color = 'var(--accent-orange)';
+
+      heroKeycode.textContent = e.button;
+      heroKeycode.style.color = 'var(--accent-orange)';
+
+      heroKeyname.textContent = `${btnName} (Mouse Event)`;
+
+      valSource.textContent = '--';
+      valKeycode.textContent = e.button;
+      valCode.textContent = e.type;
+      valWhich.textContent = 'AIR MOUSE CURSOR';
+
+      playBeep(650, 'sine');
+
+      flashOverlay.className = 'flash-overlay active-pointer';
+      heroCard.className = 'card hero-card flash-pointer';
+
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => {
+        flashOverlay.className = 'flash-overlay';
+        heroCard.className = 'card hero-card';
+      }, 180);
+
+      addHistoryLog({
+        mode: 'AIR MOUSE',
+        type: e.type,
+        codeNum: e.button,
+        name: btnName,
+        details: `Coords: X:${Math.round(e.clientX)}, Y:${Math.round(e.clientY)}`
+      });
+    }
+
+    function addHistoryLog(item) {
+      keyHistory.unshift(item);
+      if (keyHistory.length > 50) keyHistory.pop();
+
+      logCount.textContent = keyHistory.length;
 
       if (logTbody.querySelector('.empty-row')) {
         logTbody.innerHTML = '';
       }
 
       const tr = document.createElement('tr');
-      const catClass = data.isPointer ? 'type-pointer' : (data.category === 'GAMEPAD' ? 'type-gamepad' : 'type-key');
+      const isKey = item.mode === 'KEYBOARD';
 
       tr.innerHTML = `
         <td>${new Date().toLocaleTimeString()}</td>
-        <td class="${catClass}">${data.category}</td>
-        <td>${data.eventType}</td>
-        <td class="keycode-num">${data.codeNum} (${escapeHtml(data.codeName)})</td>
-        <td>${escapeHtml(data.extra)}</td>
+        <td class="${isKey ? 'type-key' : 'type-pointer'}">${item.mode}</td>
+        <td>${item.type}</td>
+        <td class="keycode-num">${item.codeNum} (${escapeHtml(item.name)})</td>
+        <td>${escapeHtml(item.details)}</td>
       `;
 
       logTbody.insertBefore(tr, logTbody.firstChild);
@@ -661,107 +759,24 @@
         .replace(/"/g, '&quot;');
     }
 
-    // 1. Keyboard & Remote D-Pad Listener
-    function handleKeyboardEvent(e) {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
-        e.preventDefault();
-      }
-
-      const codeNum = e.keyCode || e.which || 0;
-      const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
-
-      processInputEvent({
-        category: 'KEYBOARD',
-        eventType: e.type,
-        codeNum: codeNum,
-        codeName: keyName,
-        title: `KEY: ${keyName}`,
-        extra: `code: ${e.code || '--'}`,
-        isPointer: false,
-        soundFreq: 300 + (codeNum % 400),
-        targetName: e.target ? e.target.tagName : 'WINDOW'
-      });
-    }
-
-    // 2. Mouse / Air Mouse Pointer & Click Listener
-    function handlePointerEvent(e) {
-      const btnMap = { '-1': 'Air Mouse Movement', 0: 'OK / Select (Button 0)', 1: 'Back / Option (Button 1)', 2: 'Context / Back (Button 2)' };
-      const buttonName = btnMap[e.button] || `Button ${e.button}`;
-      const coords = `X:${Math.round(e.clientX || 0)}, Y:${Math.round(e.clientY || 0)}`;
-
-      processInputEvent({
-        category: 'AIR MOUSE / POINTER',
-        eventType: e.type,
-        codeNum: e.button !== undefined ? e.button : 0,
-        codeName: buttonName,
-        title: `POINTER: ${e.type.toUpperCase()}`,
-        extra: coords,
-        coords: coords,
-        isPointer: true,
-        soundFreq: 600,
-        targetName: e.target ? e.target.tagName : 'BODY'
-      });
-    }
-
-    // 3. Attach Listeners
+    // Attach Keyboard Listeners (Capture + Bubble)
     ['keydown', 'keyup', 'keypress'].forEach(evt => {
       window.addEventListener(evt, handleKeyboardEvent, true);
+      window.addEventListener(evt, handleKeyboardEvent, false);
+      document.addEventListener(evt, handleKeyboardEvent, true);
     });
 
-    ['click', 'pointerdown', 'pointerup', 'mousedown', 'mouseup', 'contextmenu', 'touchdown'].forEach(evt => {
+    // Attach Pointer Warnings
+    ['click', 'pointerdown', 'mousedown', 'contextmenu'].forEach(evt => {
       window.addEventListener(evt, handlePointerEvent, true);
     });
 
-    // Throttle cursor movement logging so it doesn't flood log
-    let lastMoveTime = 0;
-    ['pointermove', 'mousemove'].forEach(evt => {
-      window.addEventListener(evt, (e) => {
-        const now = Date.now();
-        if (now - lastMoveTime > 300) {
-          lastMoveTime = now;
-          handlePointerEvent(e);
-        }
-      }, true);
-    });
-
-    // 4. Gamepad API Poller for Bluetooth / USB TV Remotes
-    let lastGamepadState = {};
-    function pollGamepads() {
-      try {
-        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-        for (let i = 0; i < gamepads.length; i++) {
-          const gp = gamepads[i];
-          if (!gp) continue;
-          flagCtrl.textContent = `CONNECTED (${gp.id.slice(0, 15)})`;
-
-          gp.buttons.forEach((btn, bIdx) => {
-            const key = `${i}_b_${bIdx}`;
-            if (btn.pressed && !lastGamepadState[key]) {
-              processInputEvent({
-                category: 'GAMEPAD',
-                eventType: 'buttondown',
-                codeNum: bIdx,
-                codeName: `Button ${bIdx}`,
-                title: `GAMEPAD BTN ${bIdx}`,
-                extra: `Gamepad: ${gp.id.slice(0, 20)}`,
-                isPointer: false,
-                soundFreq: 750
-              });
-            }
-            lastGamepadState[key] = btn.pressed;
-          });
-        }
-      } catch(e){}
-      requestAnimationFrame(pollGamepads);
-    }
-    pollGamepads();
-
     clearBtn.addEventListener('click', () => {
-      inputHistory = [];
+      keyHistory = [];
       logCount.textContent = '0';
       logTbody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="5">Log cleared. Move remote or press buttons...</td>
+          <td colspan="5">Log cleared. Press D-Pad buttons on remote...</td>
         </tr>
       `;
     });
