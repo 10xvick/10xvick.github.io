@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Android TV Remote Keycode Tester</title>
+  <title>Android TV Remote & Pointer Input Tester</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -51,12 +51,17 @@
     }
 
     .flash-overlay.active-keydown {
-      background: radial-gradient(circle, rgba(0, 255, 136, 0.3) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.35) 0%, transparent 70%);
+      opacity: 1;
+    }
+
+    .flash-overlay.active-pointer {
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.35) 0%, transparent 70%);
       opacity: 1;
     }
 
     .flash-overlay.active-keyup {
-      background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 0, 127, 0.25) 0%, transparent 70%);
       opacity: 1;
     }
 
@@ -134,16 +139,6 @@
       color: var(--accent-green);
     }
 
-    /* Focus Trap Div - Non-IME target for raw Android D-Pad events */
-    .tv-focus-target {
-      outline: none;
-      border: 2px solid transparent;
-    }
-
-    .tv-focus-target:focus {
-      border-color: rgba(0, 240, 255, 0.5);
-    }
-
     /* Grid Layout */
     .main-grid {
       display: grid;
@@ -180,9 +175,10 @@
       transform: scale(1.01);
     }
 
-    .hero-card.flash-up {
+    .hero-card.flash-pointer {
       border-color: var(--accent-cyan);
       box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+      transform: scale(1.01);
     }
 
     .hero-header {
@@ -216,7 +212,7 @@
 
     .keycode-display {
       font-family: var(--font-mono);
-      font-size: 6rem;
+      font-size: 5.5rem;
       font-weight: 900;
       line-height: 1;
       color: var(--accent-green);
@@ -257,7 +253,7 @@
 
     .detail-val {
       font-family: var(--font-mono);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 700;
       margin-top: 4px;
       color: #ffffff;
@@ -265,36 +261,6 @@
 
     .detail-val.highlight {
       color: var(--accent-cyan);
-    }
-
-    /* Mode Banner */
-    .mode-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(0, 240, 255, 0.1);
-      border: 1px solid rgba(0, 240, 255, 0.3);
-      padding: 12px 18px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-
-    .mode-info {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .mode-btn {
-      font-family: var(--font-main);
-      font-weight: 700;
-      font-size: 0.85rem;
-      padding: 6px 14px;
-      border-radius: 8px;
-      background: rgba(0, 255, 136, 0.2);
-      color: var(--accent-green);
-      border: 1px solid rgba(0, 255, 136, 0.4);
-      cursor: pointer;
     }
 
     /* Info Card & Meta Flags */
@@ -335,12 +301,6 @@
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.08);
       color: var(--text-main);
-    }
-
-    .meta-badge.is-true {
-      background: rgba(255, 0, 127, 0.2);
-      color: var(--accent-magenta);
-      border: 1px solid rgba(255, 0, 127, 0.4);
     }
 
     /* TV Cheatsheet */
@@ -442,13 +402,19 @@
       background: rgba(255, 255, 255, 0.03);
     }
 
-    .log-table .type-keydown {
+    .log-table .type-key {
       color: var(--accent-green);
       font-weight: 700;
     }
 
-    .log-table .type-keyup {
+    .log-table .type-pointer {
       color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .log-table .type-gamepad {
+      color: var(--accent-yellow);
+      font-weight: 700;
     }
 
     .log-table .keycode-num {
@@ -463,58 +429,46 @@
     }
   </style>
 </head>
-<body tabindex="0">
+<body>
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
         <span class="pulse-dot"></span>
-        <h1>Android TV Keycode Tester <span class="version-badge">v1.2.0</span></h1>
+        <h1>Android TV Universal Input Tester <span class="version-badge">v1.3.0</span></h1>
       </div>
-      <div class="status-badge" id="status-badge">RAW D-PAD MODE (NO IME)</div>
+      <div class="status-badge" id="status-badge">Listening for Keys & Air Mouse Pointers</div>
     </header>
-
-    <!-- Non-IME Focus Target Container: Receives focus without triggering Android Gboard/IME keycode 229 -->
-    <div id="tv-focus-target" class="card tv-focus-target" tabindex="0" autofocus inputmode="none" style="padding: 12px 20px; cursor: pointer;">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <span style="font-weight: 700; font-size: 0.95rem; color: var(--accent-green);">
-          🎯 Focus Target Active (Click or Press D-Pad Here)
-        </span>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">
-          Prevents On-screen Keyboard IME (KeyCode 229)
-        </span>
-      </div>
-    </div>
 
     <main class="main-grid">
       <!-- Flash Hero Box -->
       <section class="card hero-card" id="hero-card">
         <div class="hero-header">
-          <span class="label">LAST DETECTED KEY</span>
+          <span class="label">LAST DETECTED INPUT</span>
           <span class="event-type-badge" id="hero-event-type">EVENT: NONE</span>
         </div>
         
         <div class="hero-body">
           <div class="keycode-display" id="hero-keycode">--</div>
-          <div class="key-name-display" id="hero-keyname">Press any remote button</div>
+          <div class="key-name-display" id="hero-keyname">Press remote button or move cursor</div>
         </div>
 
         <div class="hero-details">
           <div class="detail-item">
-            <span class="detail-label">e.key</span>
-            <span class="detail-val" id="val-key">--</span>
+            <span class="detail-label">Input Source</span>
+            <span class="detail-val" id="val-source">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">e.keyCode</span>
+            <span class="detail-label">Key / Button Code</span>
             <span class="detail-val highlight" id="val-keycode">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">e.code</span>
+            <span class="detail-label">Name / Identifier</span>
             <span class="detail-val" id="val-code">--</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">e.which</span>
+            <span class="detail-label">Cursor / Details</span>
             <span class="detail-val" id="val-which">--</span>
           </div>
         </div>
@@ -522,44 +476,41 @@
 
       <!-- Event Properties Grid -->
       <section class="card info-card">
-        <h2 class="card-title">Event Flags & Metadata</h2>
+        <h2 class="card-title">Live Input Metadata</h2>
         <div class="meta-grid">
           <div class="meta-item">
-            <span class="meta-label">Repeat</span>
-            <span class="meta-badge" id="flag-repeat">false</span>
+            <span class="meta-label">Event Type</span>
+            <span class="meta-badge" id="flag-repeat">NONE</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Location</span>
-            <span class="meta-val" id="flag-location">0</span>
+            <span class="meta-label">Pointer X, Y</span>
+            <span class="meta-val" id="flag-location">0, 0</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Shift</span>
-            <span class="meta-badge" id="flag-shift">false</span>
+            <span class="meta-label">Target DOM</span>
+            <span class="meta-badge" id="flag-shift">BODY</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Ctrl</span>
-            <span class="meta-badge" id="flag-ctrl">false</span>
+            <span class="meta-label">Gamepad</span>
+            <span class="meta-badge" id="flag-ctrl">OFFLINE</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Alt</span>
-            <span class="meta-badge" id="flag-alt">false</span>
+            <span class="meta-label">Air Mouse</span>
+            <span class="meta-badge" id="flag-alt">ACTIVE</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Meta</span>
-            <span class="meta-badge" id="flag-meta">false</span>
+            <span class="meta-label">D-Pad Key</span>
+            <span class="meta-badge" id="flag-meta">READY</span>
           </div>
         </div>
         
         <div class="tv-cheatsheet">
-          <h3>Android TV Keycodes (Raw Mode)</h3>
+          <h3>TV Input Reference Modes</h3>
           <ul>
-            <li><kbd>D-Pad Up</kbd> : <span>19 (ArrowUp)</span></li>
-            <li><kbd>D-Pad Down</kbd> : <span>20 (ArrowDown)</span></li>
-            <li><kbd>D-Pad Left</kbd> : <span>21 (ArrowLeft)</span></li>
-            <li><kbd>D-Pad Right</kbd> : <span>22 (ArrowRight)</span></li>
-            <li><kbd>Select/Center</kbd> : <span>23 / 66 (Enter)</span></li>
-            <li><kbd>Back Button</kbd> : <span>4 / 27 / 461 / 10009</span></li>
-            <li><kbd>Media Play/Pause</kbd> : <span>179 / 126</span></li>
+            <li><kbd>D-Pad Remote</kbd> : <span>KeyCodes 19,20,21,22,23</span></li>
+            <li><kbd>Air Mouse Pointer</kbd> : <span>Click, PointerDown (Btn 0)</span></li>
+            <li><kbd>Back / Exit Button</kbd> : <span>Key 4 / ContextMenu / Esc</span></li>
+            <li><kbd>Bluetooth Gamepad</kbd> : <span>HTML5 Gamepad API</span></li>
           </ul>
         </div>
       </section>
@@ -567,7 +518,7 @@
       <!-- Log History -->
       <section class="card log-card">
         <div class="log-header">
-          <h2 class="card-title">Keypress History (<span id="log-count">0</span>)</h2>
+          <h2 class="card-title">Input Event Log (<span id="log-count">0</span>)</h2>
           <button id="clear-btn" class="clear-btn" tabindex="0">Clear Log</button>
         </div>
         
@@ -576,15 +527,15 @@
             <thead>
               <tr>
                 <th>Time</th>
-                <th>Type</th>
-                <th>Key</th>
-                <th>KeyCode</th>
-                <th>Code</th>
+                <th>Category</th>
+                <th>Event Type</th>
+                <th>Code / Button</th>
+                <th>Details</th>
               </tr>
             </thead>
             <tbody id="log-tbody">
               <tr class="empty-row">
-                <td colspan="5">No keypresses recorded yet. Press any remote button...</td>
+                <td colspan="5">No input events recorded yet. Move remote or press buttons...</td>
               </tr>
             </tbody>
           </table>
@@ -595,14 +546,13 @@
 
   <script>
     // DOM Element References
-    const tvFocusTarget = document.getElementById('tv-focus-target');
     const flashOverlay = document.getElementById('flash-overlay');
     const heroCard = document.getElementById('hero-card');
     const heroEventType = document.getElementById('hero-event-type');
     const heroKeycode = document.getElementById('hero-keycode');
     const heroKeyname = document.getElementById('hero-keyname');
 
-    const valKey = document.getElementById('val-key');
+    const valSource = document.getElementById('val-source');
     const valKeycode = document.getElementById('val-keycode');
     const valCode = document.getElementById('val-code');
     const valWhich = document.getElementById('val-which');
@@ -619,29 +569,10 @@
     const logCount = document.getElementById('log-count');
     const clearBtn = document.getElementById('clear-btn');
 
-    let keyHistory = [];
+    let inputHistory = [];
     let flashTimer = null;
 
-    // Force blur on any active input / text field so Android IME keyboard stays closed
-    function dismissSoftKeyboard() {
-      if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-        document.activeElement.blur();
-      }
-      try {
-        tvFocusTarget.focus({ preventScroll: true });
-      } catch(e){}
-    }
-
-    // Auto-focus loop to keep div focused without triggering soft keyboard
-    window.addEventListener('load', dismissSoftKeyboard);
-    document.addEventListener('click', dismissSoftKeyboard);
-    setInterval(() => {
-      if (document.activeElement !== tvFocusTarget && document.activeElement !== clearBtn) {
-        dismissSoftKeyboard();
-      }
-    }, 500);
-
-    // Audio Context for subtle audio feedback on TV button press
+    // Audio Context for subtle audio feedback on TV button press / click
     let audioCtx = null;
     function playBeep(freq = 440, type = 'sine') {
       try {
@@ -660,52 +591,33 @@
       } catch (err) {}
     }
 
-    // Comprehensive Key Event Handler
-    function handleKeyEvent(e) {
-      // Prevent default scrolling for D-Pad / Arrow keys / Backspace so TV interface stays steady
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
-        e.preventDefault();
-      }
+    // Process & Display Input Event
+    function processInputEvent(data) {
+      playBeep(data.soundFreq || 500, 'triangle');
 
-      const eventType = e.type || 'unknown';
-      const isDown = eventType === 'keydown';
-      const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
-      const codeNum = e.keyCode || e.which || (e.key ? e.key.charCodeAt(0) : 0);
+      statusBadge.textContent = `Active: ${data.category} - ${data.eventType.toUpperCase()}`;
 
-      // Audio feedback
-      if (isDown) {
-        playBeep(codeNum > 0 ? 300 + (codeNum % 400) : 440, 'triangle');
-      }
+      heroEventType.textContent = `${data.category}: ${data.eventType.toUpperCase()}`;
+      heroEventType.style.background = data.isPointer ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 255, 136, 0.2)';
+      heroEventType.style.color = data.isPointer ? 'var(--accent-cyan)' : 'var(--accent-green)';
 
-      // Update Status Badge
-      statusBadge.textContent = `Captured: ${eventType.toUpperCase()} (${codeNum})`;
+      heroKeycode.textContent = data.codeNum;
+      heroKeycode.style.color = data.isPointer ? 'var(--accent-cyan)' : 'var(--accent-green)';
 
-      // Update Hero Display
-      heroEventType.textContent = `EVENT: ${eventType.toUpperCase()}`;
-      heroEventType.style.background = isDown ? 'rgba(0, 255, 136, 0.2)' : 'rgba(0, 240, 255, 0.2)';
-      heroEventType.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
+      heroKeyname.textContent = data.title;
 
-      heroKeycode.textContent = codeNum;
-      heroKeycode.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
+      valSource.textContent = data.category;
+      valKeycode.textContent = data.codeNum;
+      valCode.textContent = data.codeName;
+      valWhich.textContent = data.extra;
 
-      heroKeyname.textContent = keyName || 'Unknown Key';
+      flagRepeat.textContent = data.eventType;
+      flagLocation.textContent = data.coords || 'N/A';
+      flagShift.textContent = data.targetName || 'WINDOW';
 
-      valKey.textContent = JSON.stringify(e.key || '');
-      valKeycode.textContent = codeNum;
-      valCode.textContent = JSON.stringify(e.code || '');
-      valWhich.textContent = e.which || '--';
-
-      // Update Flags
-      updateFlag(flagRepeat, Boolean(e.repeat));
-      flagLocation.textContent = e.location || 0;
-      updateFlag(flagShift, Boolean(e.shiftKey));
-      updateFlag(flagCtrl, Boolean(e.ctrlKey));
-      updateFlag(flagAlt, Boolean(e.altKey));
-      updateFlag(flagMeta, Boolean(e.metaKey));
-
-      // Flash UI Animation
-      flashOverlay.className = `flash-overlay ${isDown ? 'active-keydown' : 'active-keyup'}`;
-      heroCard.className = `card hero-card ${isDown ? 'flash-down' : 'flash-up'}`;
+      // Flash overlay
+      flashOverlay.className = `flash-overlay ${data.isPointer ? 'active-pointer' : 'active-keydown'}`;
+      heroCard.className = `card hero-card ${data.isPointer ? 'flash-pointer' : 'flash-down'}`;
 
       clearTimeout(flashTimer);
       flashTimer = setTimeout(() => {
@@ -713,42 +625,29 @@
         heroCard.className = 'card hero-card';
       }, 180);
 
-      // Append to History Log
-      addHistoryLog({
-        time: new Date().toLocaleTimeString(),
-        type: eventType,
-        key: keyName,
-        keyCode: codeNum,
-        code: e.code || ''
-      });
+      // Append to history
+      addHistoryLog(data);
     }
 
-    function updateFlag(el, isTrue) {
-      el.textContent = isTrue ? 'TRUE' : 'FALSE';
-      if (isTrue) {
-        el.classList.add('is-true');
-      } else {
-        el.classList.remove('is-true');
-      }
-    }
+    function addHistoryLog(data) {
+      inputHistory.unshift(data);
+      if (inputHistory.length > 50) inputHistory.pop();
 
-    function addHistoryLog(item) {
-      keyHistory.unshift(item);
-      if (keyHistory.length > 50) keyHistory.pop();
-
-      logCount.textContent = keyHistory.length;
+      logCount.textContent = inputHistory.length;
 
       if (logTbody.querySelector('.empty-row')) {
         logTbody.innerHTML = '';
       }
 
       const tr = document.createElement('tr');
+      const catClass = data.isPointer ? 'type-pointer' : (data.category === 'GAMEPAD' ? 'type-gamepad' : 'type-key');
+
       tr.innerHTML = `
-        <td>${item.time}</td>
-        <td class="${item.type === 'keydown' ? 'type-keydown' : 'type-keyup'}">${item.type}</td>
-        <td>${escapeHtml(item.key)}</td>
-        <td class="keycode-num">${item.keyCode}</td>
-        <td>${escapeHtml(item.code)}</td>
+        <td>${new Date().toLocaleTimeString()}</td>
+        <td class="${catClass}">${data.category}</td>
+        <td>${data.eventType}</td>
+        <td class="keycode-num">${data.codeNum} (${escapeHtml(data.codeName)})</td>
+        <td>${escapeHtml(data.extra)}</td>
       `;
 
       logTbody.insertBefore(tr, logTbody.firstChild);
@@ -762,28 +661,110 @@
         .replace(/"/g, '&quot;');
     }
 
-    // Attach listeners across window, document, body, and focus target in both capture and bubble phases
-    ['keydown', 'keyup', 'keypress'].forEach(evtType => {
-      window.addEventListener(evtType, handleKeyEvent, true);
-      window.addEventListener(evtType, handleKeyEvent, false);
-      document.addEventListener(evtType, handleKeyEvent, true);
-      if (tvFocusTarget) {
-        tvFocusTarget.addEventListener(evtType, handleKeyEvent, true);
+    // 1. Keyboard & Remote D-Pad Listener
+    function handleKeyboardEvent(e) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
+        e.preventDefault();
       }
+
+      const codeNum = e.keyCode || e.which || 0;
+      const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
+
+      processInputEvent({
+        category: 'KEYBOARD',
+        eventType: e.type,
+        codeNum: codeNum,
+        codeName: keyName,
+        title: `KEY: ${keyName}`,
+        extra: `code: ${e.code || '--'}`,
+        isPointer: false,
+        soundFreq: 300 + (codeNum % 400),
+        targetName: e.target ? e.target.tagName : 'WINDOW'
+      });
+    }
+
+    // 2. Mouse / Air Mouse Pointer & Click Listener
+    function handlePointerEvent(e) {
+      const btnMap = { 0: 'OK / Left Click', 1: 'Middle Click', 2: 'Back / Right Click' };
+      const buttonName = btnMap[e.button] || `Button ${e.button}`;
+      const coords = `X:${Math.round(e.clientX || 0)}, Y:${Math.round(e.clientY || 0)}`;
+
+      processInputEvent({
+        category: 'AIR MOUSE / POINTER',
+        eventType: e.type,
+        codeNum: e.button !== undefined ? e.button : 0,
+        codeName: buttonName,
+        title: `POINTER: ${e.type.toUpperCase()}`,
+        extra: coords,
+        coords: coords,
+        isPointer: true,
+        soundFreq: 600,
+        targetName: e.target ? e.target.tagName : 'BODY'
+      });
+    }
+
+    // 3. Attach Listeners
+    ['keydown', 'keyup', 'keypress'].forEach(evt => {
+      window.addEventListener(evt, handleKeyboardEvent, true);
     });
 
+    ['click', 'pointerdown', 'pointerup', 'mousedown', 'mouseup', 'contextmenu', 'touchdown'].forEach(evt => {
+      window.addEventListener(evt, handlePointerEvent, true);
+    });
+
+    // Throttle cursor movement logging so it doesn't flood log
+    let lastMoveTime = 0;
+    ['pointermove', 'mousemove'].forEach(evt => {
+      window.addEventListener(evt, (e) => {
+        const now = Date.now();
+        if (now - lastMoveTime > 300) {
+          lastMoveTime = now;
+          handlePointerEvent(e);
+        }
+      }, true);
+    });
+
+    // 4. Gamepad API Poller for Bluetooth / USB TV Remotes
+    let lastGamepadState = {};
+    function pollGamepads() {
+      try {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        for (let i = 0; i < gamepads.length; i++) {
+          const gp = gamepads[i];
+          if (!gp) continue;
+          flagCtrl.textContent = `CONNECTED (${gp.id.slice(0, 15)})`;
+
+          gp.buttons.forEach((btn, bIdx) => {
+            const key = `${i}_b_${bIdx}`;
+            if (btn.pressed && !lastGamepadState[key]) {
+              processInputEvent({
+                category: 'GAMEPAD',
+                eventType: 'buttondown',
+                codeNum: bIdx,
+                codeName: `Button ${bIdx}`,
+                title: `GAMEPAD BTN ${bIdx}`,
+                extra: `Gamepad: ${gp.id.slice(0, 20)}`,
+                isPointer: false,
+                soundFreq: 750
+              });
+            }
+            lastGamepadState[key] = btn.pressed;
+          });
+        }
+      } catch(e){}
+      requestAnimationFrame(pollGamepads);
+    }
+    pollGamepads();
+
     clearBtn.addEventListener('click', () => {
-      keyHistory = [];
+      inputHistory = [];
       logCount.textContent = '0';
       logTbody.innerHTML = `
         <tr class="empty-row">
-          <td colspan="5">Log cleared. Press any remote button...</td>
+          <td colspan="5">Log cleared. Move remote or press buttons...</td>
         </tr>
       `;
-      dismissSoftKeyboard();
     });
-
-    dismissSoftKeyboard();
   </script>
 </body>
 </html>
