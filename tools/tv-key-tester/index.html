@@ -436,7 +436,7 @@
     <header class="header">
       <div class="brand">
         <span class="pulse-dot"></span>
-        <h1>Android TV Universal Input Tester <span class="version-badge">v1.3.0</span></h1>
+        <h1>Android TV Universal Input Tester <span class="version-badge">v1.3.1</span></h1>
       </div>
       <div class="status-badge" id="status-badge">Listening for Keys & Air Mouse Pointers</div>
     </header>
@@ -685,7 +685,7 @@
 
     // 2. Mouse / Air Mouse Pointer & Click Listener
     function handlePointerEvent(e) {
-      const btnMap = { 0: 'OK / Left Click', 1: 'Middle Click', 2: 'Back / Right Click' };
+      const btnMap = { '-1': 'Air Mouse Movement', 0: 'OK / Select (Button 0)', 1: 'Back / Option (Button 1)', 2: 'Context / Back (Button 2)' };
       const buttonName = btnMap[e.button] || `Button ${e.button}`;
       const coords = `X:${Math.round(e.clientX || 0)}, Y:${Math.round(e.clientY || 0)}`;
 
