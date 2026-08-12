@@ -45,12 +45,54 @@
         radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.15) 0%, transparent 45%);
     }
 
+    /* Start Launcher Overlay */
+    .start-launcher-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(9, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .start-launcher-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .launcher-btn {
+      background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-cyan) 100%);
+      color: #000000;
+      font-family: var(--font-main);
+      font-weight: 900;
+      font-size: 1.8rem;
+      padding: 24px 48px;
+      border-radius: 24px;
+      border: none;
+      box-shadow: 0 0 45px rgba(0, 255, 136, 0.5);
+      cursor: pointer;
+      margin-top: 24px;
+      animation: pulse-btn 1.5s infinite;
+    }
+
+    @keyframes pulse-btn {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 45px rgba(0, 255, 136, 0.5); }
+      50% { transform: scale(1.04); box-shadow: 0 0 65px rgba(0, 255, 136, 0.8); }
+    }
+
     /* Flash Overlay Animation */
     .flash-overlay {
       position: fixed;
       inset: 0;
       pointer-events: none;
-      z-index: 999;
+      z-index: 998;
       opacity: 0;
       transition: opacity 0.05s ease-out;
     }
@@ -243,12 +285,21 @@
   </style>
 </head>
 <body tabindex="0">
+  <!-- Launcher Overlay for First User Activation -->
+  <div id="start-launcher" class="start-launcher-overlay">
+    <h1 style="font-size: 2.5rem; font-weight: 900; color: #ffffff;">📺 Android TV Fullscreen Key Tester</h1>
+    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 12px; max-width: 600px;">
+      Press any button on your TV remote or click anywhere to launch Fullscreen Mode & enable native remote keys!
+    </p>
+    <button class="launcher-btn" id="launch-btn">PRESS ANY BUTTON TO START</button>
+  </div>
+
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
     <header class="header">
       <div class="brand">
-        <h1>Android TV Keycode Tester <span class="version-badge">v2.1.0</span></h1>
+        <h1>Android TV Keycode Tester <span class="version-badge">v2.2.0</span></h1>
       </div>
       <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent-cyan);" id="status-badge">
         Fullscreen Auto-Lock & Back-Key Blocker
@@ -261,7 +312,7 @@
         <span>🔒</span>
         <span>AUTO FULLSCREEN LOCKED & BACK KEY PREVENTED</span>
       </div>
-      <div class="fs-status" id="fs-status-text">FULLSCREEN LOCKED</div>
+      <div class="fs-status" id="fs-status-text">FULLSCREEN ACTIVE</div>
     </div>
 
     <!-- Hero Card -->
@@ -305,6 +356,8 @@
   </div>
 
   <script>
+    const startLauncher = document.getElementById('start-launcher');
+    const launchBtn = document.getElementById('launch-btn');
     const flashOverlay = document.getElementById('flash-overlay');
     const heroCard = document.getElementById('hero-card');
     const heroKeycode = document.getElementById('hero-keycode');
@@ -318,29 +371,40 @@
     const clearBtn = document.getElementById('clear-btn');
 
     let flashTimer = null;
+    let isStarted = false;
 
-    // 1. AUTOMATIC FULLSCREEN LOCK (Auto-requests without waiting for button click)
-    function autoLockFullscreen() {
+    // 1. FULLSCREEN ACTIVATOR ON FIRST USER GESTURE
+    function activateFullscreen() {
       if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen().then(() => {
-          fsStatusText.textContent = 'FULLSCREEN LOCKED';
+          startLauncher.classList.add('hidden');
+          fsStatusText.textContent = 'FULLSCREEN ACTIVE';
+          isStarted = true;
         }).catch(err => {
-          // Silently retry on next event if browser required gesture
+          // If browser rejected fullscreen without gesture, retry on next interaction
         });
+      } else {
+        startLauncher.classList.add('hidden');
+        isStarted = true;
       }
     }
 
-    // Trigger auto-fullscreen on load, click, keydown, mousemove, and fullscreen exit attempt
-    window.addEventListener('load', autoLockFullscreen);
-    window.addEventListener('click', autoLockFullscreen, true);
-    window.addEventListener('pointerdown', autoLockFullscreen, true);
-    window.addEventListener('mousemove', autoLockFullscreen, true);
+    // Attempt automatic request immediately on page load
+    window.addEventListener('load', activateFullscreen);
+    
+    // Attach gesture triggers to window & launcher button for instant activation on first remote press
+    launchBtn.addEventListener('click', activateFullscreen);
+    ['click', 'pointerdown', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, activateFullscreen, true);
+    });
+
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement) {
         fsStatusText.textContent = 'RE-LOCKING FULLSCREEN...';
-        setTimeout(autoLockFullscreen, 50);
+        setTimeout(activateFullscreen, 50);
       } else {
-        fsStatusText.textContent = 'FULLSCREEN LOCKED';
+        fsStatusText.textContent = 'FULLSCREEN ACTIVE';
+        startLauncher.classList.add('hidden');
       }
     });
 
@@ -365,8 +429,7 @@
 
     // 2. RAW KEYBOARD EVENT LISTENER + PREVENT FULLSCREEN EXIT & PREVENT BACK KEY
     function handleKeyEvent(e) {
-      // Auto-lock fullscreen on any keypress
-      autoLockFullscreen();
+      activateFullscreen();
 
       const codeNum = e.keyCode || e.which || 0;
       let keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
@@ -443,7 +506,7 @@
           <td colspan="5">No hardware keypresses recorded yet. Press remote buttons...</td>
         </tr>
       `;
-      autoLockFullscreen();
+      activateFullscreen();
     });
   </script>
 </body>
