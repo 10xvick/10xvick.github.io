@@ -115,9 +115,22 @@
       font-weight: 600;
       padding: 8px 16px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--card-border);
-      color: var(--accent-cyan);
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      color: var(--accent-green);
+    }
+
+    /* Hidden TV Focus Trap Input */
+    .tv-focus-trap {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      opacity: 0.05;
+      z-index: 10000;
+      border: 1px solid var(--accent-cyan);
+      background: transparent;
     }
 
     /* Grid Layout */
@@ -409,7 +422,10 @@
     }
   </style>
 </head>
-<body>
+<body tabindex="0">
+  <!-- Invisible Focus Trap input so Android TV WebViews dispatch JS keyboard events -->
+  <input id="tv-focus-input" type="text" class="tv-focus-trap" autofocus tabindex="0" />
+
   <div id="flash-overlay" class="flash-overlay"></div>
 
   <div class="container">
@@ -418,7 +434,7 @@
         <span class="pulse-dot"></span>
         <h1>Android TV Keycode Tester</h1>
       </div>
-      <div class="status-badge" id="status-badge">Awaiting Key Press...</div>
+      <div class="status-badge" id="status-badge">TV Listening Active</div>
     </header>
 
     <main class="main-grid">
@@ -529,6 +545,7 @@
 
   <script>
     // DOM Element References
+    const tvFocusInput = document.getElementById('tv-focus-input');
     const flashOverlay = document.getElementById('flash-overlay');
     const heroCard = document.getElementById('hero-card');
     const heroEventType = document.getElementById('hero-event-type');
@@ -555,6 +572,20 @@
     let keyHistory = [];
     let flashTimer = null;
 
+    // Enforce focus on input trap so Android TV WebView passes all key events
+    function ensureFocus() {
+      if (document.activeElement !== tvFocusInput && document.activeElement !== clearBtn) {
+        try {
+          tvFocusInput.focus({ preventScroll: true });
+        } catch(e){}
+      }
+    }
+    
+    // Auto-focus loop for Android TV WebView
+    window.addEventListener('load', ensureFocus);
+    document.addEventListener('click', ensureFocus);
+    setInterval(ensureFocus, 600);
+
     // Audio Context for subtle audio feedback on TV button press
     let audioCtx = null;
     function playBeep(freq = 440, type = 'sine') {
@@ -571,21 +602,23 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.08);
-      } catch (err) {
-        // Ignore audio errors if audio context is blocked
-      }
+      } catch (err) {}
     }
 
-    // Handle Key Events
+    // Comprehensive Event Handler
     function handleKeyEvent(e) {
       // Prevent default scrolling for D-Pad / Arrow keys / Backspace so TV interface stays steady
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4) {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code) || e.keyCode === 4 || e.key === 'Escape') {
         e.preventDefault();
       }
 
-      const isDown = e.type === 'keydown';
-      const keyName = e.key === ' ' ? 'Space' : e.key;
-      const codeNum = e.keyCode || e.which || 0;
+      const eventType = e.type || 'unknown';
+      const isDown = eventType === 'keydown';
+      const keyName = e.key === ' ' ? 'Space' : (e.key || e.code || 'Unknown');
+      const codeNum = e.keyCode || e.which || (e.key ? e.key.charCodeAt(0) : 0);
+
+      // Clear input content so IME / soft keyboard doesn't buffer text
+      if (tvFocusInput) tvFocusInput.value = '';
 
       // Audio feedback
       if (isDown) {
@@ -593,10 +626,10 @@
       }
 
       // Update Status Badge
-      statusBadge.textContent = `Active Event: ${e.type.toUpperCase()}`;
+      statusBadge.textContent = `Captured: ${eventType.toUpperCase()} (${codeNum})`;
 
       // Update Hero Display
-      heroEventType.textContent = `EVENT: ${e.type.toUpperCase()}`;
+      heroEventType.textContent = `EVENT: ${eventType.toUpperCase()}`;
       heroEventType.style.background = isDown ? 'rgba(0, 255, 136, 0.2)' : 'rgba(0, 240, 255, 0.2)';
       heroEventType.style.color = isDown ? 'var(--accent-green)' : 'var(--accent-cyan)';
 
@@ -605,18 +638,18 @@
 
       heroKeyname.textContent = keyName || 'Unknown Key';
 
-      valKey.textContent = JSON.stringify(e.key);
+      valKey.textContent = JSON.stringify(e.key || '');
       valKeycode.textContent = codeNum;
-      valCode.textContent = JSON.stringify(e.code);
+      valCode.textContent = JSON.stringify(e.code || '');
       valWhich.textContent = e.which || '--';
 
       // Update Flags
-      updateFlag(flagRepeat, e.repeat);
-      flagLocation.textContent = e.location;
-      updateFlag(flagShift, e.shiftKey);
-      updateFlag(flagCtrl, e.ctrlKey);
-      updateFlag(flagAlt, e.altKey);
-      updateFlag(flagMeta, e.metaKey);
+      updateFlag(flagRepeat, Boolean(e.repeat));
+      flagLocation.textContent = e.location || 0;
+      updateFlag(flagShift, Boolean(e.shiftKey));
+      updateFlag(flagCtrl, Boolean(e.ctrlKey));
+      updateFlag(flagAlt, Boolean(e.altKey));
+      updateFlag(flagMeta, Boolean(e.metaKey));
 
       // Flash UI Animation
       flashOverlay.className = `flash-overlay ${isDown ? 'active-keydown' : 'active-keyup'}`;
@@ -631,10 +664,10 @@
       // Append to History Log
       addHistoryLog({
         time: new Date().toLocaleTimeString(),
-        type: e.type,
+        type: eventType,
         key: keyName,
         keyCode: codeNum,
-        code: e.code
+        code: e.code || ''
       });
     }
 
@@ -670,16 +703,22 @@
     }
 
     function escapeHtml(str) {
-      return String(str)
+      return String(str || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
 
-    // Event Listeners
-    window.addEventListener('keydown', handleKeyEvent, true);
-    window.addEventListener('keyup', handleKeyEvent, true);
+    // Attach listeners to window, document, body, and focus input across both capture and bubble phases
+    ['keydown', 'keyup', 'keypress', 'input', 'beforeinput'].forEach(evtType => {
+      window.addEventListener(evtType, handleKeyEvent, true);
+      window.addEventListener(evtType, handleKeyEvent, false);
+      document.addEventListener(evtType, handleKeyEvent, true);
+      if (tvFocusInput) {
+        tvFocusInput.addEventListener(evtType, handleKeyEvent, true);
+      }
+    });
 
     clearBtn.addEventListener('click', () => {
       keyHistory = [];
@@ -689,7 +728,10 @@
           <td colspan="5">Log cleared. Press any remote button...</td>
         </tr>
       `;
+      ensureFocus();
     });
+
+    ensureFocus();
   </script>
 </body>
 </html>
