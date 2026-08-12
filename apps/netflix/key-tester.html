@@ -109,6 +109,20 @@
       -webkit-text-fill-color: transparent;
     }
 
+    .version-badge {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      vertical-align: middle;
+      margin-left: 8px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      color: var(--accent-cyan);
+      -webkit-text-fill-color: var(--accent-cyan);
+    }
+
     .status-badge {
       font-family: var(--font-mono);
       font-size: 0.95rem;
@@ -432,7 +446,7 @@
     <header class="header">
       <div class="brand">
         <span class="pulse-dot"></span>
-        <h1>Android TV Keycode Tester</h1>
+        <h1>Android TV Keycode Tester <span class="version-badge">v1.1.0</span></h1>
       </div>
       <div class="status-badge" id="status-badge">TV Listening Active</div>
     </header>
