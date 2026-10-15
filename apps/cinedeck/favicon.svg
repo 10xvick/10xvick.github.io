@@ -1,1 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#000"/><path d="M19 8h-6a8 8 0 000 16h6v-4h-6a4 4 0 010-8h6V8z" fill="#E50914"/><path d="M16 12.5l5 3.5-5 3.5v-7z" fill="#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Antenna -->
+  <path d="M 450 170 L 512 310 L 574 170" 
+        stroke="#ea0016" 
+        stroke-width="24" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        fill="none" />
+
+  <!-- Controller Body -->
+  <path d="M 300 320 
+           C 130 320, 100 420, 100 550 
+           L 100 760 
+           C 100 870, 170 890, 230 890 
+           C 310 890, 330 760, 430 740 
+           C 470 730, 554 730, 594 740 
+           C 694 760, 714 890, 794 890 
+           C 854 890, 924 870, 924 760 
+           L 924 550 
+           C 924 420, 894 320, 724 320 
+           Z" 
+        fill="#ea0016" />
+
+  <!-- Left Button (Pause) -->
+  <g id="left-joystick">
+    <!-- Outer Circle -->
+    <circle cx="285" cy="520" r="125" 
+            stroke="#2b2b2b" 
+            stroke-width="24" 
+            fill="none" />
+    <!-- Pause Bars -->
+    <line x1="255" y1="465" x2="255" y2="575" 
+          stroke="#2b2b2b" 
+          stroke-width="26" 
+          stroke-linecap="round" />
+    <line x1="315" y1="465" x2="315" y2="575" 
+          stroke="#2b2b2b" 
+          stroke-width="26" 
+          stroke-linecap="round" />
+  </g>
+
+  <!-- Right Button (Play) -->
+  <g id="right-joystick">
+    <!-- Outer Circle -->
+    <circle cx="739" cy="520" r="125" 
+            stroke="#2b2b2b" 
+            stroke-width="24" 
+            fill="none" />
+    <!-- Play Triangle -->
+    <path d="M 695 460 L 695 580 L 785 520 Z" 
+          fill="#2b2b2b" 
+          stroke="#2b2b2b" 
+          stroke-width="24" 
+          stroke-linejoin="round" />
+  </g>
+</svg>
