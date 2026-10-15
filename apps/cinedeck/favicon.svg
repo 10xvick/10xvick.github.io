@@ -1,56 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Antenna -->
-  <path d="M 450 170 L 512 310 L 574 170" 
-        stroke="#ea0016" 
-        stroke-width="24" 
-        stroke-linecap="round" 
-        stroke-linejoin="round" 
-        fill="none" />
-
-  <!-- Controller Body -->
-  <path d="M 300 320 
-           C 130 320, 100 420, 100 550 
-           L 100 760 
-           C 100 870, 170 890, 230 890 
-           C 310 890, 330 760, 430 740 
-           C 470 730, 554 730, 594 740 
-           C 694 760, 714 890, 794 890 
-           C 854 890, 924 870, 924 760 
-           L 924 550 
-           C 924 420, 894 320, 724 320 
-           Z" 
-        fill="#ea0016" />
-
-  <!-- Left Button (Pause) -->
+  <defs>
+    <linearGradient id="netflixRed" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#ff2a3a"/>
+      <stop offset="25%" stop-color="#e50914"/>
+      <stop offset="70%" stop-color="#b20710"/>
+      <stop offset="100%" stop-color="#6e0007"/>
+    </linearGradient>
+    <linearGradient id="antennaRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff3b3b"/>
+      <stop offset="100%" stop-color="#e50914"/>
+    </linearGradient>
+    <filter id="carved">
+      <feOffset dx="0" dy="8"/>
+      <feGaussianBlur stdDeviation="0" result="offset-blur"/>
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+      <feFlood flood-color="#000000" flood-opacity="0.8" result="color"/>
+      <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+      <feOffset dx="0" dy="-6"/>
+      <feGaussianBlur stdDeviation="0" result="offset-blur2"/>
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur2" result="inverse2"/>
+      <feFlood flood-color="#ff6b6b" flood-opacity="0.3" result="color2"/>
+      <feComposite operator="in" in="color2" in2="inverse2" result="highlight"/>
+      <feMerge>
+        <feMergeNode in="highlight"/>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M 450 170 L 512 310 L 574 170" stroke="url(#antennaRed)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M 300 320 C 130 320, 100 420, 100 550 L 100 760 C 100 870, 170 890, 230 890 C 310 890, 330 760, 430 740 C 470 730, 554 730, 594 740 C 694 760, 714 890, 794 890 C 854 890, 924 870, 924 760 L 924 550 C 924 420, 894 320, 724 320 Z" fill="url(#netflixRed)"/>
   <g id="left-joystick">
-    <!-- Outer Circle -->
-    <circle cx="285" cy="520" r="125" 
-            stroke="#2b2b2b" 
-            stroke-width="24" 
-            fill="none" />
-    <!-- Pause Bars -->
-    <line x1="255" y1="465" x2="255" y2="575" 
-          stroke="#2b2b2b" 
-          stroke-width="26" 
-          stroke-linecap="round" />
-    <line x1="315" y1="465" x2="315" y2="575" 
-          stroke="#2b2b2b" 
-          stroke-width="26" 
-          stroke-linecap="round" />
+    <circle cx="285" cy="520" r="165" fill="#e50914"/>
+    <circle cx="285" cy="520" r="135" fill="#aa0000" filter="url(#carved)"/>
+    <rect x="225" y="405" width="45" height="230" rx="22.5" fill="#ff2a3a"/>
+    <rect x="300" y="405" width="45" height="230" rx="22.5" fill="#ff2a3a"/>
   </g>
-
-  <!-- Right Button (Play) -->
   <g id="right-joystick">
-    <!-- Outer Circle -->
-    <circle cx="739" cy="520" r="125" 
-            stroke="#2b2b2b" 
-            stroke-width="24" 
-            fill="none" />
-    <!-- Play Triangle -->
-    <path d="M 695 460 L 695 580 L 785 520 Z" 
-          fill="#2b2b2b" 
-          stroke="#2b2b2b" 
-          stroke-width="24" 
-          stroke-linejoin="round" />
+    <circle cx="739" cy="520" r="165" fill="#e50914"/>
+    <circle cx="739" cy="520" r="135" fill="#aa0000" filter="url(#carved)"/>
+    <path d="M 844 520 L 687 429 L 687 611 Z" fill="#ff2a3a" stroke="#ff2a3a" stroke-width="24" stroke-linejoin="round"/>
   </g>
 </svg>
