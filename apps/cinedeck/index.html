@@ -9,7 +9,44 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>CineDeck TV</title>
-    <script type="module" crossorigin src="./assets/index-BUQEUpPj.js"></script>
+    <script>
+      (function() {
+        try {
+          if (typeof navigator !== 'undefined' && navigator.userAgentData) {
+            var spoofBrands = [
+              { brand: "Chromium", version: "124" },
+              { brand: "Google Chrome", version: "124" },
+              { brand: "Not-A.Brand", version: "24" }
+            ];
+            var spoofData = {
+              brands: spoofBrands,
+              mobile: false,
+              platform: "Windows",
+              getHighEntropyValues: function() {
+                return Promise.resolve({
+                  brands: spoofBrands,
+                  mobile: false,
+                  platform: "Windows",
+                  platformVersion: "10.0.0",
+                  architecture: "x86",
+                  bitness: "64",
+                  model: ""
+                });
+              },
+              toJSON: function() {
+                return { brands: spoofBrands, mobile: false, platform: "Windows" };
+              }
+            };
+            Object.defineProperty(navigator, "userAgentData", {
+              get: function() { return spoofData; },
+              configurable: true,
+              enumerable: true
+            });
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-DZ0F4fjN.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-DoGnqIPw.css">
   </head>
   <body class="bg-black text-white">
