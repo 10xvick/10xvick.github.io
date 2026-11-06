@@ -44,9 +44,21 @@
             });
           }
         } catch (_) {}
+
+        // Auto-recover if a script or stylesheet chunk fails to load (e.g. stale cached index.html)
+        window.addEventListener('error', function(e) {
+          if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+            var url = e.target.src || e.target.href;
+            var key = 'cd_chunk_reload_' + url;
+            if (!sessionStorage.getItem(key)) {
+              sessionStorage.setItem(key, '1');
+              window.location.reload();
+            }
+          }
+        }, true);
       })();
     </script>
-    <script type="module" crossorigin src="./assets/index-sF14YI4F.js"></script>
+    <script type="module" crossorigin src="./assets/index-gtVlZUpw.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CcOL0fCb.css">
   </head>
   <body class="bg-black text-white">
