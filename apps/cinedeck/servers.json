@@ -154,7 +154,13 @@
       "extractable": true,
       "successRate": "Native-Compatible (HLS)",
       "streamType": "hls",
-      "autoplayStrategy": "native"
+      "autoplayStrategy": "native",
+      "extraction": {
+        "headers": {
+          "Referer": "https://vidrock.net/",
+          "Origin": "https://vidrock.net"
+        }
+      }
     },
     {
       "name": "YapGrid",
