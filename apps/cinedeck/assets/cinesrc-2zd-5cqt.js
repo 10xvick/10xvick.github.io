@@ -1,1 +1,0 @@
-import{t as e}from"./hlsParser-C7ypBtJg.js";var t={name:`CineSrc`,matchesUrl(e){let t=e.toLowerCase();return t.includes(`cinesrc.st`)||t.includes(`cinesrc`)},parseManifest(t,n){return{videoUrl:t,audioTracks:e(t,n,`CineSrc`)}}};export{t as cinesrcExtractor};

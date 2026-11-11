@@ -1,1 +1,0 @@
-var e={name:`MegaEmbed`,sandbox:!1,matchesUrl(e){return e.toLowerCase().includes(`megaembed`)}};export{e as megaembedExtractor};
