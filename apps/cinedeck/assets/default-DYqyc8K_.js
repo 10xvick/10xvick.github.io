@@ -1,0 +1,1 @@
+import{t as e}from"./hlsParser-C7ypBtJg.js";function t(t){return{name:t,parseManifest(n,r){return{videoUrl:n,audioTracks:e(n,r,t)}}}}export{t as createDefaultExtractor};
