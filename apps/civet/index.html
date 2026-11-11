@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Civet TV</title>
+    <script>
+      (function() {
+        try {
+          if (typeof navigator !== 'undefined' && navigator.userAgentData) {
+            var spoofBrands = [
+              { brand: "Chromium", version: "124" },
+              { brand: "Google Chrome", version: "124" },
+              { brand: "Not-A.Brand", version: "24" }
+            ];
+            var spoofData = {
+              brands: spoofBrands,
+              mobile: false,
+              platform: "Windows",
+              getHighEntropyValues: function() {
+                return Promise.resolve({
+                  brands: spoofBrands,
+                  mobile: false,
+                  platform: "Windows",
+                  platformVersion: "10.0.0",
+                  architecture: "x86",
+                  bitness: "64",
+                  model: ""
+                });
+              },
+              toJSON: function() {
+                return { brands: spoofBrands, mobile: false, platform: "Windows" };
+              }
+            };
+            Object.defineProperty(navigator, "userAgentData", {
+              get: function() { return spoofData; },
+              configurable: true,
+              enumerable: true
+            });
+          }
+        } catch (_) {}
+
+        // Auto-recover if a script or stylesheet chunk fails to load (e.g. stale cached index.html)
+        window.addEventListener('error', function(e) {
+          if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+            var url = e.target.src || e.target.href;
+            var key = 'cd_chunk_reload_' + url;
+            if (!sessionStorage.getItem(key)) {
+              sessionStorage.setItem(key, '1');
+              window.location.reload();
+            }
+          }
+        }, true);
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-DV6-gHpr.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CcOL0fCb.css">
+  </head>
+  <body class="bg-black text-white">
+    <div id="root"></div>
+  </body>
+</html>

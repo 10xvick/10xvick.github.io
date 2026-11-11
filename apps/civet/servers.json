@@ -1,0 +1,544 @@
+{
+  "streamable": [
+    {
+      "name": "EmbedBandit",
+      "movie": "https://embedbandit.com/embed/movie?tmdb={id}&autoplay=1&autostart=true",
+      "tv": "https://embedbandit.com/embed/tv?tmdb={id}&season={season}&episode={episode}&autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "10/10 (100%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "CineSrc",
+      "movie": "https://cinesrc.st/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://cinesrc.st/embed/tv/{id}?s={season}&e={episode}&autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "10/10 (100%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "CineXtream",
+      "movie": "https://cinextream.cc/api/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://cinextream.cc/api/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "10/10 (100%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidSrc.si VIP",
+      "movie": "https://embed.vidsrc.si/embed/movie/{id}?autoplay=1&autostart=true&ds_lang=en",
+      "tv": "https://embed.vidsrc.si/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true&ds_lang=en",
+      "extractable": true,
+      "successRate": "Autoplay (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidLink",
+      "movie": "https://vidlink.pro/movie/{id}?autoplay=true&autostart=true&title=true",
+      "tv": "https://vidlink.pro/tv/{id}/{season}/{episode}?autoplay=true&autostart=true&title=true",
+      "extractable": true,
+      "successRate": "9/10 (90%)",
+      "streamType": "mp4",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "StreamVault",
+      "movie": "https://streamvaultsrc.click/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://streamvaultsrc.click/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "9/10 (90%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "111Movies.net",
+      "movie": "https://111movies.net/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://111movies.net/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "8/10 (80%)",
+      "streamType": "mp4",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidRift",
+      "movie": "https://embed.vidrift.net/embed/movie/{id}?autoplay=1&autostart=true&provider=orion",
+      "tv": "https://embed.vidrift.net/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true&provider=orion",
+      "extractable": true,
+      "successRate": "8/10 (80%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidZen",
+      "movie": "https://vidzen.fun/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidzen.fun/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "6/10 (60%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidSrc.su",
+      "movie": "https://vidsrc.su/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.su/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "3/10 (30%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidUp",
+      "movie": "https://vidup.to/movie/{id}?autoPlay=true&autoplay=1&autostart=true",
+      "tv": "https://vidup.to/tv/{id}/{season}/{episode}?autoPlay=true&autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "vidup_trigger"
+    },
+    {
+      "name": "VidPhantom",
+      "movie": "https://vidphantom.com/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidphantom.com/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Title-Dependent (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "MegaEmbed",
+      "movie": "https://megaembed.com/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://megaembed.com/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Title-Dependent (MP4)",
+      "streamType": "mp4",
+      "autoplayStrategy": "native",
+      "extraction": {
+        "sandbox": false
+      }
+    },
+    {
+      "name": "NSRPlay",
+      "movie": "https://nsrplay.space/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://nsrplay.space/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Title-Dependent (Proxy)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidFast",
+      "movie": "https://vidfast.pro/movie/{id}?autoPlay=true&autoplay=1&autostart=true",
+      "tv": "https://vidfast.pro/tv/{id}/{season}/{episode}?autoPlay=true&autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "Vidnest",
+      "movie": "https://vidnest.fun/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidnest.fun/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidLux",
+      "movie": "https://vidlux.xyz/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidlux.xyz/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native",
+      "extraction": {
+        "headers": {
+          "Referer": "https://vidrock.net/",
+          "Origin": "https://vidrock.net"
+        }
+      }
+    },
+    {
+      "name": "YapGrid",
+      "movie": "https://yapgrid.com/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://yapgrid.com/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidRock",
+      "movie": "https://vidrock.net/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidrock.net/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidCore.org",
+      "movie": "https://vidcore.org/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidcore.org/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidCore.io",
+      "movie": "https://vidcore.io/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidcore.io/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "Native-Compatible (HLS)",
+      "streamType": "hls",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "Videasy.xyz",
+      "movie": "https://videasy.xyz/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://videasy.xyz/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "streamType": "hls",
+      "successRate": "Native-Compatible (HLS)",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "AutoEmbed",
+      "movie": "https://autoembed.co/movie/tmdb/{id}?autoplay=1&autostart=true",
+      "tv": "https://autoembed.co/tv/tmdb/{id}-{season}-{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "streamType": "hls",
+      "successRate": "Native-Compatible (HLS)",
+      "autoplayStrategy": "native"
+    },
+    {
+      "name": "VidSrc.pm",
+      "movie": "https://vidsrc.pm/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.pm/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": true,
+      "successRate": "10/10 (100%)",
+      "streamType": "hls",
+      "autoplayStrategy": "native",
+      "extraction": {
+        "sandbox": false
+      }
+    }
+  ],
+  "embedOnly": [
+    {
+      "name": "VidSrc.mov",
+      "movie": "https://vidsrc.mov/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.mov/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidSrc.fyi",
+      "movie": "https://vidsrc.fyi/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.fyi/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "Videasy",
+      "movie": "https://player.videasy.net/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://player.videasy.net/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+
+    {
+      "name": "VidSrc.sh",
+      "movie": "https://vidsrc.sh/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.sh/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidSrc.buzz",
+      "movie": "https://vidsrc.buzz/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.buzz/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "Videm",
+      "movie": "https://videm.xyz/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://videm.xyz/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "ApiPlayer",
+      "movie": "https://apiplayer.ru/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://apiplayer.ru/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "NontonGo",
+      "movie": "https://nontongo.win/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://nontongo.win/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "Strigil",
+      "movie": "https://strigil.cc/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://strigil.cc/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidBolt",
+      "movie": "https://vidbolt.xyz/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidbolt.xyz/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "Net79",
+      "movie": "https://net79.cc/watch-tmdb/{id}?type=movie&autoplay=1&autostart=true",
+      "tv": "https://net79.cc/watch-tmdb/{id}?type=tv&season={season}&episode={episode}&autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "EmbedMaster",
+      "movie": "https://embedmaster.link/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://embedmaster.link/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "ScreenScape",
+      "movie": "https://nxsha.screenscape.me/embed?tmdb={id}&type=movie&lan=eng&autoplay=1&autostart=true",
+      "tv": "https://nxsha.screenscape.me/embed?tmdb={id}&type=tv&s={season}&e={episode}&lan=eng&autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+
+    {
+      "name": "SuperFlix.quest",
+      "movie": "https://superflixapi.quest/filme/{id}?autoplay=1&autostart=true",
+      "tv": "https://superflixapi.quest/serie/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "2Embed.cc",
+      "movie": "https://www.2embed.cc/embed/{id}?autoplay=1",
+      "tv": "https://www.2embed.cc/embedtv/{id}&s={season}&e={episode}&autoplay=1",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidKing",
+      "movie": "https://www.vidking.net/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://www.vidking.net/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "MultiEmbed",
+      "movie": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1&autoplay=1",
+      "tv": "https://multiembed.mov/directstream.php?video_id={id}&tmdb=1&s={season}&e={episode}&autoplay=1",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "MultiEmbed.mov",
+      "movie": "https://multiembed.mov/?video_id={id}&tmdb=1&autoplay=1",
+      "tv": "https://multiembed.mov/?video_id={id}&tmdb=1&s={season}&e={episode}&autoplay=1",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "111Movies.com",
+      "movie": "https://111movies.com/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://111movies.com/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "MappleTV",
+      "movie": "https://mappletv.uk/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://mappletv.uk/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "MoviesAPI",
+      "movie": "https://moviesapi.to/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://moviesapi.to/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidZee",
+      "movie": "https://player.vidzee.wtf/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://player.vidzee.wtf/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidSrc.sbs",
+      "movie": "https://vidsrc.sbs/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidsrc.sbs/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidAPI.xyz",
+      "movie": "https://vidapi.xyz/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidapi.xyz/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidAPI.ru",
+      "movie": "https://vidapi.ru/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidapi.ru/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VixSrc",
+      "movie": "https://vixsrc.to/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vixsrc.to/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidSpark",
+      "movie": "https://vidspark.to/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidspark.to/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "WaveEmbed",
+      "movie": "https://wavembed.lol/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://wavembed.lol/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "EmbedAPI",
+      "movie": "https://watch.embed-api.stream/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://watch.embed-api.stream/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "2Embed.online",
+      "movie": "https://2embed.online/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://2embed.online/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "Peachify",
+      "movie": "https://peachify.top/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://peachify.top/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "FrEmbed",
+      "movie": "https://frembed.surf/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://frembed.surf/embed/serie/{id}?sa={season}&epi={episode}&autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "VidUp.one",
+      "movie": "https://vidup.one/embed/movie/{id}?autoplay=1&autostart=true",
+      "tv": "https://vidup.one/embed/tv/{id}/{season}/{episode}?autoplay=1&autostart=true",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "SuperFlix.top",
+      "movie": "https://superflixapi.top/movie/{id}?autoplay=1",
+      "tv": "https://superflixapi.top/tv/{id}/{season}/{episode}?autoplay=1",
+      "extractable": false,
+      "autoplayStrategy": "generic_click"
+    },
+    {
+      "name": "EmbedGram",
+      "movie": "https://embedgram.com/embed/movie/{id}",
+      "tv": "https://embedgram.com/embed/tv/{id}/{season}/{episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "1Flex",
+      "movie": "https://1flex.org/?type=movie&id={id}",
+      "tv": "https://1flex.org/?type=tv&id={id}&season={season}&episode={episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "TonkaCine",
+      "movie": "https://tonkacine.watch/embed/movie/{id}",
+      "tv": "https://tonkacine.watch/embed/tv/{id}/{season}/{episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "VidBox",
+      "movie": "https://vidbox.vc/movie/{id}",
+      "tv": "https://vidbox.vc/tv/{id}-{season}-{episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "StreamingUnity",
+      "movie": "https://streamingunity.vip/?type=movie&id={id}",
+      "tv": "https://streamingunity.vip/?type=tv&id={id}&season={season}&episode={episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "PrimeSrc",
+      "movie": "https://primesrc.me/embed/movie?tmdb={id}",
+      "tv": "https://primesrc.me/embed/tv?tmdb={id}&season={season}&episode={episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "Viduki",
+      "movie": "https://www.viduki.net/4/movie/{id}",
+      "tv": "https://www.viduki.net/4/tv/{id}/{season}/{episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "Cinezo",
+      "movie": "https://player.cinezo.live/embed/movie/{id}?autoplay=true",
+      "tv": "https://player.cinezo.live/embed/tv/{id}/{season}/{episode}?autoplay=true",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "AnyEmbed",
+      "movie": "https://anyembed.xyz/movie/{id}",
+      "tv": "https://anyembed.xyz/tv/{id}/{season}/{episode}",
+      "extractable": false,
+      "successRate": "Embed Only"
+    },
+    {
+      "name": "RiveStream",
+      "movie": "https://rivestream.ru/watch?type=movie&id={id}&autoplay=1&autostart=true",
+      "tv": "https://rivestream.ru/watch?type=tv&id={id}&season={season}&episode={episode}&autoplay=1&autostart=true",
+      "extractable": false,
+      "successRate": "Embed Only"
+    }
+  ]
+}
